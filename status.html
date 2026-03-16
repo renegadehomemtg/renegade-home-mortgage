@@ -740,52 +740,14 @@
   var COMPANY_ID   = 1997;
   var OFFICER_ID   = 47;
 
-  // ── Milestone definitions (in order) ────────────────────────────────────────
-  var MILESTONES = [
-    {
-      key:   'application',
-      label: 'Application Received',
-      // Possible API field names for this milestone date
-      dateFields: ['ApplicationDate', 'ApplicationReceivedDate', 'DateApplication'],
-      icon: iconCheck()
-    },
-    {
-      key:   'processing',
-      label: 'Processing',
-      dateFields: ['ProcessingDate', 'DateProcessing', 'SubmittedToProcessingDate'],
-      icon: iconDoc()
-    },
-    {
-      key:   'underwriting',
-      label: 'Submitted to Underwriting',
-      dateFields: ['SubmittedToUWDate', 'UnderwritingDate', 'DateSubmittedToUW', 'UWSubmitDate'],
-      icon: iconSearch()
-    },
-    {
-      key:   'conditional',
-      label: 'Conditional Approval',
-      dateFields: ['ConditionalApprovalDate', 'SuspendedDate', 'ApprovalDate', 'DateConditionalApproval'],
-      icon: iconShield()
-    },
-    {
-      key:   'ctc',
-      label: 'Clear to Close',
-      dateFields: ['ClearToCloseDate', 'CTCDate', 'DateCTC', 'DateClearToClose'],
-      icon: iconStar()
-    },
-    {
-      key:   'closing',
-      label: 'Closing Scheduled',
-      dateFields: ['ClosingDate', 'ScheduledClosingDate', 'DateClosing', 'CloseDate'],
-      icon: iconCalendar()
-    },
-    {
-      key:   'funded',
-      label: 'Funded & Recorded',
-      dateFields: ['FundingDate', 'FundedDate', 'DateFunded', 'RecordedDate'],
-      icon: iconHome()
-    }
-  ];
+  // ── Condition status code mapping (PAM API uses numeric codes) ──────────────
+  var CONDITION_STATUS = {
+    1: { label: 'Outstanding', badge: 'condition-badge--outstanding' },
+    2: { label: 'Received',    badge: 'condition-badge--satisfied'   },
+    3: { label: 'Waived',      badge: 'condition-badge--waived'      },
+    4: { label: 'In Review',   badge: 'condition-badge--outstanding' },
+    5: { label: 'Cleared',     badge: 'condition-badge--satisfied'   }
+  };
 
   // ── SVG icon helpers ─────────────────────────────────────────────────────────
   function svgWrap(path, size) {
@@ -793,13 +755,8 @@
     return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
   }
   function iconCheck()    { return svgWrap('<path d="M20 6L9 17l-5-5"/>'); }
-  function iconDoc()      { return svgWrap('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'); }
-  function iconSearch()   { return svgWrap('<circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>'); }
-  function iconShield()   { return svgWrap('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'); }
-  function iconStar()     { return svgWrap('<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'); }
-  function iconCalendar() { return svgWrap('<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'); }
-  function iconHome()     { return svgWrap('<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'); }
   function iconClock()    { return svgWrap('<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'); }
+  function iconCircle()   { return svgWrap('<circle cx="12" cy="12" r="10"/>'); }
 
   // ── DOM refs ─────────────────────────────────────────────────────────────────
   var form          = document.getElementById('status-lookup-form');
@@ -811,7 +768,6 @@
   var noLoanSection = document.getElementById('no-loan-found');
   var tryAgainBtn   = document.getElementById('try-again-btn');
 
-  // Result display targets
   var elLoanNumber  = document.getElementById('result-loan-number');
   var elBorrowerName= document.getElementById('result-borrower-name');
   var elStatusBadge = document.getElementById('result-status-badge');
@@ -828,21 +784,15 @@
     infoBox.classList.remove('lookup-message--visible');
   }
 
-  function showInfo(msg) {
-    infoBox.textContent = msg;
-    infoBox.classList.add('lookup-message--visible');
-    errorBox.classList.remove('lookup-message--visible');
-  }
-
   function clearMessages() {
     errorBox.classList.remove('lookup-message--visible');
     infoBox.classList.remove('lookup-message--visible');
   }
 
-  function setLoading(loading) {
-    if (loading) {
+  function setLoading(on) {
+    if (on) {
       lookupBtn.classList.add('btn--loading');
-      lookupBtn.textContent = 'Looking up your loan…';
+      lookupBtn.textContent = 'Looking up your loan\u2026';
       lookupBtn.disabled = true;
     } else {
       lookupBtn.classList.remove('btn--loading');
@@ -860,29 +810,15 @@
     noLoanSection.style.display = 'none';
   }
 
-  // ── Pick the most recent loan from an array ──────────────────────────────────
-  function pickMostRecentLoan(loans) {
-    if (!loans || loans.length === 0) return null;
-    if (loans.length === 1) return loans[0];
-
-    // Sort by ApplicationDate descending; fall back to array order
-    return loans.slice().sort(function (a, b) {
-      var dateA = new Date(a.ApplicationDate || a.DateApplication || 0);
-      var dateB = new Date(b.ApplicationDate || b.DateApplication || 0);
-      return dateB - dateA;
-    })[0];
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
-  // ── Extract a date from a loan object using a list of possible field names ───
-  function extractDate(loan, fields) {
-    for (var i = 0; i < fields.length; i++) {
-      var val = loan[fields[i]];
-      if (val) return val;
-    }
-    return null;
-  }
-
-  // ── Format a date string for display ────────────────────────────────────────
   function formatDate(raw) {
     if (!raw) return null;
     try {
@@ -894,60 +830,86 @@
     }
   }
 
-  // ── Build milestone HTML ─────────────────────────────────────────────────────
-  function buildMilestones(loan) {
-    var lastCompletedIndex = -1;
+  // ── Extract borrower name from the nested Applications structure ─────────────
+  function getBorrowerName(loan) {
+    try {
+      var apps = loan.Applications;
+      if (apps && apps.length > 0) {
+        var b = apps[0].PrimaryBorrower;
+        if (b) {
+          return [b.FirstName || '', b.LastName || ''].filter(Boolean).join(' ');
+        }
+      }
+    } catch (e) {}
+    // Fallback to flat fields
+    return [loan.BorrowerFirstName || loan.FirstName || '', loan.BorrowerLastName || loan.LastName || ''].filter(Boolean).join(' ');
+  }
 
-    // First pass: determine which milestones have dates
-    var milestoneData = MILESTONES.map(function (ms, idx) {
-      var raw = extractDate(loan, ms.dateFields);
-      var date = formatDate(raw);
-      if (date) lastCompletedIndex = idx;
-      return { ms: ms, date: date, idx: idx };
+  // ── Build milestones from the actual PAM Milestones array ───────────────────
+  function buildMilestones(loan) {
+    var milestones = loan.Milestones || [];
+
+    // Filter to only borrower-facing milestones (InternalMilestone === false)
+    var visible = milestones.filter(function (m) { return !m.InternalMilestone; });
+
+    // Sort by DisplayOrder
+    visible.sort(function (a, b) { return (a.DisplayOrder || 0) - (b.DisplayOrder || 0); });
+
+    if (visible.length === 0) {
+      elMilestones.innerHTML = '<li class="conditions-empty">No milestones available for this loan yet.</li>';
+      elProgressPct.textContent = '0%';
+      elProgressFill.style.width = '0%';
+      return;
+    }
+
+    // Find the last completed milestone
+    var lastCompletedIdx = -1;
+    visible.forEach(function (m, i) {
+      if (m.CompletionDate) lastCompletedIdx = i;
     });
 
-    var activeIndex = lastCompletedIndex + 1;
-    if (activeIndex >= MILESTONES.length) activeIndex = MILESTONES.length - 1;
+    var activeIdx = lastCompletedIdx + 1;
+    if (activeIdx >= visible.length) activeIdx = visible.length - 1;
 
-    var completedCount = lastCompletedIndex + 1;
-    var totalCount     = MILESTONES.length;
-    var pct = Math.round((completedCount / totalCount) * 100);
-
-    // Update progress bar
-    elProgressPct.textContent  = pct + '%';
+    var completedCount = lastCompletedIdx + 1;
+    var pct = Math.round((completedCount / visible.length) * 100);
+    elProgressPct.textContent = pct + '%';
     elProgressFill.style.width = pct + '%';
 
-    // Build HTML
     var html = '';
-    milestoneData.forEach(function (item) {
-      var completed = item.date !== null;
-      var active    = !completed && item.idx === activeIndex && lastCompletedIndex >= 0;
+    visible.forEach(function (m, i) {
+      var completed = !!m.CompletionDate;
+      var active = !completed && i === activeIdx && lastCompletedIdx >= 0;
 
       var cls = 'milestone';
       if (completed) cls += ' milestone--completed';
       else if (active) cls += ' milestone--active';
 
       var iconInner;
-      if (completed) {
-        iconInner = iconCheck();
-      } else if (active) {
-        iconInner = iconClock();
-      } else {
-        iconInner = item.ms.icon;
-      }
+      if (completed) iconInner = iconCheck();
+      else if (active) iconInner = iconClock();
+      else iconInner = iconCircle();
 
       var dateHtml = '';
-      if (item.date) {
-        dateHtml = '<div class="milestone__date">Completed ' + escHtml(item.date) + '</div>';
+      if (completed) {
+        var fDate = formatDate(m.CompletionDate);
+        if (fDate) dateHtml = '<div class="milestone__date">Completed ' + escHtml(fDate) + '</div>';
       } else if (active) {
         dateHtml = '<div class="milestone__date">In Progress</div>';
+      }
+
+      // Show description if available (e.g. conditional approval message)
+      var descHtml = '';
+      if (m.Description) {
+        descHtml = '<div class="milestone__desc" style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-1);line-height:1.5;">' + escHtml(m.Description) + '</div>';
       }
 
       html += '<li class="' + cls + '">';
       html +=   '<div class="milestone__icon" aria-hidden="true">' + iconInner + '</div>';
       html +=   '<div class="milestone__body">';
-      html +=     '<div class="milestone__label">' + escHtml(item.ms.label) + '</div>';
+      html +=     '<div class="milestone__label">' + escHtml(m.Name) + '</div>';
       html +=     dateHtml;
+      html +=     descHtml;
       html +=   '</div>';
       html += '</li>';
     });
@@ -955,14 +917,10 @@
     elMilestones.innerHTML = html;
   }
 
-  // ── Build conditions HTML ────────────────────────────────────────────────────
+  // ── Build conditions from the PAM Conditions array ──────────────────────────
   function buildConditions(loan) {
-    var conditions = loan.Conditions || loan.conditions || loan.LoanConditions || [];
-
-    // Normalize — sometimes it may be a string or other shape
-    if (!Array.isArray(conditions)) {
-      conditions = [];
-    }
+    var conditions = loan.Conditions || [];
+    if (!Array.isArray(conditions)) conditions = [];
 
     if (conditions.length === 0) {
       elConditions.innerHTML = '<li class="conditions-empty">No conditions on file, or all conditions have been cleared. Contact us if you have questions.</li>';
@@ -971,57 +929,37 @@
 
     var html = '';
     conditions.forEach(function (cond) {
-      var desc     = cond.Description || cond.description || cond.ConditionDescription || 'Condition';
-      var status   = (cond.Status || cond.status || cond.ConditionStatus || 'Pending').trim();
-      var category = cond.Category || cond.category || cond.ConditionCategory || '';
-
-      var badgeClass = getBadgeClass(status);
+      var name = cond.Name || 'Condition';
+      var desc = cond.Description || '';
+      var statusCode = cond.Status;
+      var statusInfo = CONDITION_STATUS[statusCode] || { label: 'Pending', badge: 'condition-badge--outstanding' };
+      var dueDate = cond.DueDate ? formatDate(cond.DueDate) : null;
 
       html += '<li class="condition-item">';
       html +=   '<div class="condition-item__description">';
-      html +=     escHtml(desc);
-      if (category) {
-        html += '<div class="condition-item__meta">' + escHtml(category) + '</div>';
+      html +=     '<strong>' + escHtml(name) + '</strong>';
+      if (desc) {
+        html += '<div style="margin-top:var(--space-1);">' + escHtml(desc) + '</div>';
+      }
+      if (dueDate) {
+        html += '<div class="condition-item__meta">Due: ' + escHtml(dueDate) + '</div>';
       }
       html +=   '</div>';
-      html +=   '<span class="condition-badge ' + badgeClass + '">' + escHtml(status) + '</span>';
+      html +=   '<span class="condition-badge ' + statusInfo.badge + '">' + escHtml(statusInfo.label) + '</span>';
       html += '</li>';
     });
 
     elConditions.innerHTML = html;
   }
 
-  function getBadgeClass(status) {
-    var s = status.toLowerCase();
-    if (s === 'satisfied' || s === 'cleared' || s === 'complete' || s === 'completed') {
-      return 'condition-badge--satisfied';
-    }
-    if (s === 'waived') {
-      return 'condition-badge--waived';
-    }
-    // Default: outstanding / pending / open
-    return 'condition-badge--outstanding';
-  }
-
-  // ── Simple HTML escape ───────────────────────────────────────────────────────
-  function escHtml(str) {
-    if (!str) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
-  // ── Populate results UI ──────────────────────────────────────────────────────
+  // ── Populate the results UI ─────────────────────────────────────────────────
   function populateResults(loan) {
-    var loanNum   = loan.LoanNumber || loan.loanNumber || loan.LoanID || '—';
-    var firstName = loan.BorrowerFirstName || loan.FirstName || '';
-    var lastName  = loan.BorrowerLastName  || loan.LastName  || '';
-    var status    = loan.LoanStatus || loan.Status || loan.CurrentMilestone || 'In Progress';
+    var loanNum = loan.PamID || loan.ReferenceNumber || loan.LoanNumber || '\u2014';
+    var borrowerName = getBorrowerName(loan);
+    var status = loan.Status || 'In Progress';
 
     elLoanNumber.textContent   = 'Loan #' + loanNum;
-    elBorrowerName.textContent = [firstName, lastName].filter(Boolean).join(' ');
+    elBorrowerName.textContent = borrowerName;
     elStatusBadge.textContent  = status;
 
     buildMilestones(loan);
@@ -1031,8 +969,6 @@
 
     hideAllResults();
     resultsSection.classList.add('is-visible');
-
-    // Smooth scroll to results
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -1045,7 +981,8 @@
     var payload = JSON.stringify({
       CompanyID:      COMPANY_ID,
       LoanOfficerID:  OFFICER_ID,
-      BorrowerEmail:  email
+      BorrowerEmail:  email,
+      Version:        '2.0'
     });
 
     fetch(API_ENDPOINT, {
@@ -1067,51 +1004,52 @@
     .then(function (data) {
       setLoading(false);
 
-      // API may return an array, a single object, or a wrapper object
+      /* PAM Export API v2.0 returns:
+         { Loan: { Loans: [ {...}, ... ] }, Success: true, ... }
+         OR on error: { Success: false, Code: ..., Message: ... } */
       var loans = null;
 
-      if (Array.isArray(data)) {
+      // Check for error response
+      if (data && data.Success === false) {
+        throw new Error(data.Message || 'API error');
+      }
+
+      // v2.0 structure: data.Loan.Loans
+      if (data && data.Loan && Array.isArray(data.Loan.Loans)) {
+        loans = data.Loan.Loans;
+      }
+      // Fallback: flat array or other wrappers
+      else if (Array.isArray(data)) {
         loans = data;
       } else if (data && Array.isArray(data.Loans)) {
         loans = data.Loans;
-      } else if (data && Array.isArray(data.loans)) {
-        loans = data.loans;
-      } else if (data && Array.isArray(data.Data)) {
-        loans = data.Data;
-      } else if (data && Array.isArray(data.data)) {
-        loans = data.data;
-      } else if (data && typeof data === 'object' && Object.keys(data).length > 0) {
-        // Single loan object
+      } else if (data && typeof data === 'object' && data.PamID) {
         loans = [data];
       }
 
       if (!loans || loans.length === 0) {
-        // No loan found
         noLoanSection.style.display = 'block';
         noLoanSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
 
-      var loan = pickMostRecentLoan(loans);
-      populateResults(loan);
+      // Pick the first loan (most relevant)
+      populateResults(loans[0]);
     })
     .catch(function (err) {
       setLoading(false);
       console.error('Loan status lookup error:', err);
 
-      // Distinguish between network errors and API errors
       var userMsg;
       if (!navigator.onLine) {
         userMsg = 'It looks like you\'re offline. Please check your connection and try again.';
       } else if (err.message && err.message.indexOf('404') !== -1) {
-        // 404 can mean no loan found on some APIs
         noLoanSection.style.display = 'block';
         noLoanSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       } else {
         userMsg = 'We weren\'t able to retrieve your loan status right now. Please try again in a moment, or contact us directly at michael@renegadehomemtg.com.';
       }
-
       showError(userMsg);
     });
   }
