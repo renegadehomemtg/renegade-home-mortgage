@@ -20,7 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 # ── Config ──────────────────────────────────────────────────
-NOTIFY_PHONE = "5039294615"
+NOTIFY_PHONE = "5039743571"
 NOTIFY_EMAIL = "michael@renegadehomemtg.com"
 NTFY_TOPIC = "renegade-mortgage-chat-alerts"
 
