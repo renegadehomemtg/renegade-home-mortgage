@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mortgage Calculators | Renegade Home Mortgage</title>
+<meta name="description" content="Estimate your monthly mortgage payment, compare purchase vs. refinance, calculate affordability, and more. Free mortgage calculators from Renegade Home Mortgage in West Linn, Oregon.">
+<meta property="og:title" content="Mortgage Calculators | Renegade Home Mortgage">
+<meta property="og:description" content="Free mortgage calculators — estimate your monthly payment, compare loan options, and plan your home purchase with confidence.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://renegadehomemtg.com/calculators.html">
+
+<!-- Fonts -->
+<link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<style>
+  /* Calculator page — let the Vortex embed breathe on its own page */
+  .calc-page-wrap {
+    max-width: 960px;
+    margin-inline: auto;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--color-divider);
+    background: var(--color-surface-2);
+  }
+  .calc-page-wrap iframe {
+    display: block;
+    width: 100%;
+    border: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="container">
+    <div class="header__inner">
+      <a href="./index.html" class="header__logo" aria-label="Renegade Home Mortgage - Home">
+        <img src="./assets/logo-red.jpg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--dark" height="44">
+        <img src="./assets/logo-blue.svg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--light" height="44">
+      </a>
+      <nav class="header__nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="./index.html">Home</a></li>
+          <li><a href="./about.html">About</a></li>
+          <li><a href="./programs.html">Loan Programs</a></li>
+          <li><a href="./neighborhoods.html">Neighborhoods</a></li>
+          <li><a href="./blog.html">Blog</a></li>
+          <li><a href="./calculators.html">Calculators</a></li>
+          <li><a href="https://smart1003.preapprovemeapp.com/Start?CompanyID=1997&OfficerID=47" class="btn btn--primary btn--sm" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li>
+        </ul>
+      </nav>
+      <div class="header__actions">
+        <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <ul>
+    <li><a href="./index.html">Home</a></li>
+    <li><a href="./about.html">About</a></li>
+    <li><a href="./programs.html">Loan Programs</a></li>
+    <li><a href="./neighborhoods.html">Neighborhoods</a></li>
+    <li><a href="./blog.html">Blog</a></li>
+          <li><a href="./calculators.html">Calculators</a></li>
+    <li><a href="https://smart1003.preapprovemeapp.com/Start?CompanyID=1997&OfficerID=47" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="container">
+    <span class="section-header__label">Tools</span>
+    <h1>Mortgage Calculators</h1>
+    <p class="page-hero__sub">Estimate your monthly payment, compare loan types, calculate affordability, and plan your home purchase with confidence.</p>
+  </div>
+</section>
+
+<!-- CALCULATOR EMBED -->
+<section class="section" style="padding-top: 0;">
+  <div class="container">
+    <div class="calc-page-wrap reveal" id="calc-container">
+      <iframe
+        id="vortex-calc"
+        src="https://app.vortexcalculators.com/embed/1c276b83-8a2b-4817-a397-dbc4e94c7f97"
+        width="100%"
+        frameborder="0"
+        style="border: none;"
+        title="Mortgage Calculators"
+        loading="eager"
+      ></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="section">
+  <div class="container">
+    <div class="cta-band reveal">
+      <h2>Ready to Get Started?</h2>
+      <p>Once you've run the numbers, let's make it real. Apply online in minutes or schedule a free consultation.</p>
+      <div style="display: flex; gap: var(--space-4); flex-wrap: wrap; justify-content: center;">
+        <a href="https://smart1003.preapprovemeapp.com/Start?CompanyID=1997&OfficerID=47" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer">Apply Now</a>
+        <a href="./contact.html" class="btn btn--secondary btn--lg">Talk to Michael</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <a href="./index.html" class="header__logo" aria-label="Renegade Home Mortgage">
+          <img src="./assets/logo-red.jpg" alt="Renegade Home Mortgage" class="footer__logo-img" height="36">
+        </a>
+        <p>West Linn's independent mortgage broker. We shop 50+ lenders to find your best rate.</p>
+        <p style="margin-top: var(--space-2);">NMLS# 227081</p>
+      </div>
+
+      <div class="footer__col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="./about.html">About Us</a></li>
+          <li><a href="./programs.html">Loan Programs</a></li>
+          <li><a href="./neighborhoods.html">Neighborhoods</a></li>
+          <li><a href="./blog.html">Blog</a></li>
+          <li><a href="./calculators.html">Calculators</a></li>
+          <li><a href="./contact.html">Contact</a></li>
+          <li><a href="./referral.html">Realtor Referrals</a></li>
+          <li><a href="./status.html">Loan Status</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4>Programs</h4>
+        <ul>
+          <li><a href="./programs.html#conventional">Conventional</a></li>
+          <li><a href="./programs.html#fha">FHA Loans</a></li>
+          <li><a href="./programs.html#va">VA Loans</a></li>
+          <li><a href="./programs.html#jumbo">Jumbo Loans</a></li>
+          <li><a href="./programs.html#dscr">Investor Loans</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+15039294615">(503) 929-4615</a></li>
+          <li><a href="mailto:michael@renegadehomemtg.com">michael@renegadehomemtg.com</a></li>
+          <li>West Linn, OR 97068</li>
+          <li>Mon-Fri 8am-6pm</li>
+          <li>Weekends by appt.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p>&copy; 2026 Renegade Home Mortgage. All rights reserved. NMLS# 227081</p>
+    </div>
+
+    <div class="footer__legal">
+      <p>Renegade Home Mortgage is an independent mortgage broker. NMLS# 227081. Equal Housing Opportunity Lender. All loan programs subject to credit approval, underwriting requirements, and applicable regulations. Rates and terms subject to change without notice. This is not a commitment to lend. The information provided is for educational purposes only and does not constitute financial advice. Licensed in Oregon. West Linn, OR 97068.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Floating Mobile CTA -->
+<div class="floating-cta">
+  <a href="https://smart1003.preapprovemeapp.com/Start?CompanyID=1997&OfficerID=47" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer" style="width:100%;">Get Pre-Approved Now</a>
+</div>
+
+<script src="./app.js" defer></script>
+<script src="./chatbot.js" defer></script>
+
+<script>
+(function() {
+  /* On the dedicated page, let the Vortex embed show its full content.
+     We still set a generous height and let the embed fill naturally.
+     No aggressive clipping needed here since this is the calculator's own page. */
+  var calc = document.getElementById('vortex-calc');
+  if (!calc) return;
+
+  function setCalcHeight() {
+    var w = window.innerWidth;
+    if (w > 768) {
+      calc.style.height = '820px';
+    } else if (w > 480) {
+      calc.style.height = '920px';
+    } else {
+      calc.style.height = '1050px';
+    }
+  }
+
+  setCalcHeight();
+  window.addEventListener('resize', setCalcHeight);
+
+  /* Listen for Vortex resize messages on the dedicated page — 
+     here we CAN let it auto-size since there's no whitespace clipping needed. */
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'vortex-resize' && e.data.height) {
+      calc.style.height = e.data.height + 'px';
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

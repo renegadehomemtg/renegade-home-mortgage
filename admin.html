@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin Panel | Renegade Home Mortgage</title>
+<meta name="description" content="Admin panel for Renegade Home Mortgage chatbot conversation logs.">
+
+<!-- Fonts -->
+<link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="./base.css">
+<link rel="stylesheet" href="./style.css">
+
+<style>
+  /* ===== Admin-specific styles ===== */
+
+  .admin-login {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8) var(--space-4);
+  }
+
+  .admin-login__card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border, rgba(0,0,0,0.1));
+    border-radius: 16px;
+    padding: var(--space-10) var(--space-8);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  .admin-login__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: var(--color-primary, #e63946);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-5);
+  }
+
+  .admin-login__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--space-2);
+  }
+
+  .admin-login__subtitle {
+    font-size: 0.9rem;
+    opacity: 0.6;
+    margin-bottom: var(--space-7);
+  }
+
+  .admin-login__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .admin-login__input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--color-border, rgba(0,0,0,0.15));
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: var(--color-bg, #fff);
+    color: inherit;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+
+  .admin-login__input:focus {
+    outline: none;
+    border-color: var(--color-primary, #e63946);
+  }
+
+  .admin-login__error {
+    color: var(--color-primary, #e63946);
+    font-size: 0.85rem;
+    min-height: 1.2em;
+    margin-top: calc(var(--space-2) * -1);
+  }
+
+  /* ===== Dashboard layout ===== */
+
+  .admin-dashboard {
+    padding: var(--space-8) 0 var(--space-12);
+  }
+
+  .admin-dashboard__header {
+    margin-bottom: var(--space-7);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .admin-dashboard__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: var(--space-1);
+  }
+
+  .admin-dashboard__subtitle {
+    font-size: 0.9rem;
+    opacity: 0.6;
+  }
+
+  .admin-dashboard__logout {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: inherit;
+    text-decoration: underline;
+    padding: 0;
+    font-family: inherit;
+  }
+
+  .admin-dashboard__logout:hover {
+    opacity: 1;
+  }
+
+  /* ===== Stats row ===== */
+
+  .admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-7);
+  }
+
+  .admin-stats__card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border, rgba(0,0,0,0.08));
+    border-radius: 12px;
+    padding: var(--space-5) var(--space-5);
+  }
+
+  .admin-stats__label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    margin-bottom: var(--space-2);
+  }
+
+  .admin-stats__value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* ===== Toolbar ===== */
+
+  .admin-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+    flex-wrap: wrap;
+  }
+
+  .admin-toolbar__search {
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 14px;
+    border: 1px solid var(--color-border, rgba(0,0,0,0.15));
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--color-surface);
+    color: inherit;
+    transition: border-color 0.2s;
+  }
+
+  .admin-toolbar__search:focus {
+    outline: none;
+    border-color: var(--color-primary, #e63946);
+  }
+
+  .admin-toolbar__search::placeholder {
+    opacity: 0.45;
+  }
+
+  /* ===== Conversation list ===== */
+
+  .admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .admin-conversation {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border, rgba(0,0,0,0.08));
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+
+  .admin-conversation:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  .admin-conversation__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .admin-conversation__meta {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .admin-conversation__id {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.78rem;
+    opacity: 0.5;
+    margin-bottom: 2px;
+  }
+
+  .admin-conversation__preview {
+    font-size: 0.95rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .admin-conversation__time {
+    font-size: 0.8rem;
+    opacity: 0.5;
+    margin-top: 2px;
+  }
+
+  .admin-conversation__badges {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+  }
+
+  .admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--color-surface-2, rgba(0,0,0,0.06));
+    white-space: nowrap;
+  }
+
+  .admin-conversation__chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s;
+    opacity: 0.4;
+  }
+
+  .admin-conversation.is-open .admin-conversation__chevron {
+    transform: rotate(180deg);
+  }
+
+  /* ===== Full conversation expand ===== */
+
+  .admin-conversation__body {
+    display: none;
+    border-top: 1px solid var(--color-border, rgba(0,0,0,0.08));
+    padding: var(--space-5);
+  }
+
+  .admin-conversation.is-open .admin-conversation__body {
+    display: block;
+  }
+
+  .admin-messages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: var(--space-2);
+  }
+
+  .admin-msg {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .admin-msg--bot {
+    flex-direction: row;
+  }
+
+  .admin-msg--user {
+    flex-direction: row-reverse;
+  }
+
+  .admin-msg__avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .admin-msg--bot .admin-msg__avatar {
+    background: var(--color-primary, #e63946);
+    color: #fff;
+  }
+
+  .admin-msg--user .admin-msg__avatar {
+    background: var(--color-border, rgba(0,0,0,0.1));
+    color: inherit;
+  }
+
+  .admin-msg__bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .admin-msg--bot .admin-msg__bubble {
+    background: var(--color-surface-2, rgba(0,0,0,0.05));
+    border-bottom-left-radius: 4px;
+  }
+
+  .admin-msg--user .admin-msg__bubble {
+    background: var(--color-primary, #e63946);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+
+  .admin-msg__ts {
+    font-size: 0.72rem;
+    opacity: 0.45;
+    margin-top: 4px;
+  }
+
+  .admin-msg--user .admin-msg__ts {
+    text-align: right;
+  }
+
+  /* ===== Empty state ===== */
+
+  .admin-empty {
+    text-align: center;
+    padding: var(--space-14) var(--space-4);
+    opacity: 0.5;
+  }
+
+  .admin-empty__icon {
+    margin-bottom: var(--space-4);
+    opacity: 0.3;
+  }
+
+  .admin-empty__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+  }
+
+  .admin-empty__text {
+    font-size: 0.9rem;
+  }
+
+  /* ===== Button overrides ===== */
+
+  .btn--danger {
+    background: var(--color-primary, #e63946);
+    color: #fff;
+    border: none;
+  }
+
+  .btn--danger:hover {
+    background: #c1121f;
+    color: #fff;
+  }
+
+  .btn--ghost {
+    background: transparent;
+    color: inherit;
+    border: 1px solid var(--color-border, rgba(0,0,0,0.15));
+  }
+
+  .btn--ghost:hover {
+    background: var(--color-surface, rgba(0,0,0,0.04));
+  }
+
+  /* ===== Highlight for search matches ===== */
+
+  mark.admin-hl {
+    background: rgba(230, 57, 70, 0.18);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 2px;
+  }
+
+  /* ===== Responsive ===== */
+
+  @media (max-width: 640px) {
+    .admin-login__card {
+      padding: var(--space-8) var(--space-5);
+    }
+
+    .admin-dashboard__header {
+      flex-direction: column;
+    }
+
+    .admin-conversation__summary {
+      flex-wrap: wrap;
+    }
+
+    .admin-msg__bubble {
+      max-width: 90%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="header">
+  <div class="container">
+    <div class="header__inner">
+      <a href="./index.html" class="header__logo" aria-label="Renegade Home Mortgage - Home">
+        <img src="./assets/logo-red.jpg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--dark" height="44">
+        <img src="./assets/logo-blue.svg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--light" height="44">
+      </a>
+
+      <nav class="header__nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="./index.html">Home</a></li>
+          <li><a href="./about.html">About</a></li>
+          <li><a href="./programs.html">Loan Programs</a></li>
+          <li><a href="./neighborhoods.html">Neighborhoods</a></li>
+          <li><a href="./blog.html">Blog</a></li>
+          <li><a href="./calculators.html">Calculators</a></li>
+          <li><a href="https://smart1003.preapprovemeapp.com/Start?CompanyID=1997&OfficerID=47" class="btn btn--primary btn--sm" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li>
+        </ul>
+      </nav>
+
+      <div class="header__actions">
+        <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Nav -->
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <ul>
+    <li><a href="./index.html">Home</a></li>
+    <li><a href="./about.html">About</a></li>
+    <li><a href="./programs.html">Loan Programs</a></li>
+    <li><a href="./neighborhoods.html">Neighborhoods</a></li>
+    <li><a href="./blog.html">Blog</a></li>
+          <li><a href="./calculators.html">Calculators</a></li>
+    <li><a href="https://smart1003.preapprovemeapp.com/Start?CompanyID=1997&OfficerID=47" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ============ LOGIN GATE ============ -->
+<section class="admin-login" id="adminLogin">
+  <div class="admin-login__card">
+    <div class="admin-login__icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <h1 class="admin-login__title">Admin Panel</h1>
+    <p class="admin-login__subtitle">Enter your password to access chatbot conversation logs.</p>
+    <form class="admin-login__form" id="loginForm" novalidate>
+      <input
+        type="password"
+        class="admin-login__input"
+        id="passwordInput"
+        placeholder="Password"
+        autocomplete="current-password"
+        autofocus
+      >
+      <p class="admin-login__error" id="loginError" aria-live="polite"></p>
+      <button type="submit" class="btn btn--primary">Unlock Dashboard</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section class="admin-dashboard container" id="adminDashboard" style="display:none;">
+
+  <div class="admin-dashboard__header">
+    <div>
+      <h1 class="admin-dashboard__title">Chatbot Conversations</h1>
+      <p class="admin-dashboard__subtitle" id="dashboardSubtitle">Loading conversations&hellip;</p>
+    </div>
+    <button class="admin-dashboard__logout" id="logoutBtn" type="button">Log out</button>
+  </div>
+
+  <!-- Stats -->
+  <div class="admin-stats" id="adminStats">
+    <div class="admin-stats__card">
+      <div class="admin-stats__label">Total Conversations</div>
+      <div class="admin-stats__value" id="statTotal">—</div>
+    </div>
+    <div class="admin-stats__card">
+      <div class="admin-stats__label">Total Messages</div>
+      <div class="admin-stats__value" id="statMessages">—</div>
+    </div>
+    <div class="admin-stats__card">
+      <div class="admin-stats__label">Avg Messages / Conv.</div>
+      <div class="admin-stats__value" id="statAvg">—</div>
+    </div>
+    <div class="admin-stats__card">
+      <div class="admin-stats__label">Most Recent</div>
+      <div class="admin-stats__value" id="statRecent" style="font-size:1.1rem;">—</div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="admin-toolbar">
+    <input
+      type="search"
+      class="admin-toolbar__search"
+      id="searchInput"
+      placeholder="Search conversations by content, ID, or date…"
+      aria-label="Search conversations"
+    >
+    <button class="btn btn--ghost btn--sm" id="exportBtn" type="button">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export JSON
+    </button>
+    <button class="btn btn--danger btn--sm" id="clearBtn" type="button">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      Clear All
+    </button>
+  </div>
+
+  <!-- Conversation list -->
+  <div class="admin-list" id="conversationList">
+    <!-- populated by JS -->
+  </div>
+
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <a href="./index.html" class="header__logo" aria-label="Renegade Home Mortgage">
+          <img src="./assets/logo-red.jpg" alt="Renegade Home Mortgage" class="footer__logo-img" height="36">
+        </a>
+        <p>West Linn's independent mortgage broker. We shop 50+ lenders to find your best rate.</p>
+        <p style="margin-top: var(--space-2);">NMLS# 227081</p>
+      </div>
+
+      <div class="footer__col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="./about.html">About Us</a></li>
+          <li><a href="./programs.html">Loan Programs</a></li>
+          <li><a href="./neighborhoods.html">Neighborhoods</a></li>
+          <li><a href="./blog.html">Blog</a></li>
+          <li><a href="./calculators.html">Calculators</a></li>
+          <li><a href="./contact.html">Contact</a></li>
+          <li><a href="./referral.html">Realtor Referrals</a></li>
+          <li><a href="./status.html">Loan Status</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4>Programs</h4>
+        <ul>
+          <li><a href="./programs.html#conventional">Conventional</a></li>
+          <li><a href="./programs.html#fha">FHA Loans</a></li>
+          <li><a href="./programs.html#va">VA Loans</a></li>
+          <li><a href="./programs.html#jumbo">Jumbo Loans</a></li>
+          <li><a href="./programs.html#dscr">Investor Loans</a></li>
+        </ul>
+      </div>
+
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+15039294615">(503) 929-4615</a></li>
+          <li><a href="mailto:michael@renegadehomemtg.com">michael@renegadehomemtg.com</a></li>
+          <li>West Linn, OR 97068</li>
+          <li>Mon-Fri 8am-6pm</li>
+          <li>Weekends by appt.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p>&copy; 2026 Renegade Home Mortgage. All rights reserved. NMLS# 227081</p>
+    </div>
+
+    <div class="footer__legal">
+      <p>Renegade Home Mortgage is an independent mortgage broker. NMLS# 227081. Equal Housing Opportunity Lender. All loan programs subject to credit approval, underwriting requirements, and applicable regulations. Rates and terms subject to change without notice. This is not a commitment to lend. The information provided is for educational purposes only and does not constitute financial advice. Licensed in Oregon. West Linn, OR 97068.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ ADMIN JAVASCRIPT ============ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ---- Constants ---- */
+  var STORAGE_KEY = 'renegade_chat_logs';
+  var SESSION_KEY = 'renegade_admin_auth';
+  var PASSWORD    = 'renegade2026';
+
+  /* ---- Storage abstraction (in-memory fallback) ---- */
+  var _mem = {};
+  var _ls = (function() { try { var s = window['local'+'Storage']; var t='__t'; s.setItem(t,t); s.removeItem(t); return s; } catch(e) { return null; } })();
+  var _ss = (function() { try { var s = window['session'+'Storage']; var t='__t'; s.setItem(t,t); s.removeItem(t); return s; } catch(e) { return null; } })();
+  function storeGet(key, session) {
+    try { var s = session ? _ss : _ls; return s ? s.getItem(key) : (_mem[key]||null); } catch(e) { return _mem[key]||null; }
+  }
+  function storeSet(key, val, session) {
+    try { var s = session ? _ss : _ls; if (s) { s.setItem(key,val); } else { _mem[key]=val; } } catch(e) { _mem[key]=val; }
+  }
+  function storeRemove(key, session) {
+    try { var s = session ? _ss : _ls; if (s) { s.removeItem(key); } else { delete _mem[key]; } } catch(e) { delete _mem[key]; }
+  }
+
+  /* ---- DOM refs (resolved after DOMContentLoaded) ---- */
+  var loginSection, dashboardSection, loginForm, passwordInput, loginError,
+      logoutBtn, statTotal, statMessages, statAvg, statRecent,
+      searchInput, exportBtn, clearBtn, conversationList, dashboardSubtitle;
+
+  /* ---- State ---- */
+  var allConversations = [];
+  var openIds = {};
+
+  /* ---- Helpers ---- */
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function highlightText(text, query) {
+    if (!query) return escapeHtml(text);
+    var escaped = escapeHtml(text);
+    var escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return escaped.replace(new RegExp('(' + escapedQuery + ')', 'gi'),
+      '<mark class="admin-hl">$1</mark>');
+  }
+
+  function formatDate(isoString) {
+    if (!isoString) return 'Unknown date';
+    try {
+      var d = new Date(isoString);
+      return d.toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit'
+      });
+    } catch (e) {
+      return isoString;
+    }
+  }
+
+  function shortDate(isoString) {
+    if (!isoString) return '—';
+    try {
+      var d = new Date(isoString);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch (e) {
+      return isoString;
+    }
+  }
+
+  function getFirstUserMessage(conv) {
+    if (!conv.messages || !conv.messages.length) return '(no messages)';
+    for (var i = 0; i < conv.messages.length; i++) {
+      if (conv.messages[i].role === 'user') {
+        return conv.messages[i].text || '(empty)';
+      }
+    }
+    return conv.messages[0].text || '(empty)';
+  }
+
+  function conversationMatchesQuery(conv, query) {
+    if (!query) return true;
+    var q = query.toLowerCase();
+    if ((conv.id || '').toLowerCase().indexOf(q) !== -1) return true;
+    if ((conv.startedAt || '').toLowerCase().indexOf(q) !== -1) return true;
+    if (conv.messages) {
+      for (var i = 0; i < conv.messages.length; i++) {
+        if ((conv.messages[i].text || '').toLowerCase().indexOf(q) !== -1) return true;
+      }
+    }
+    return false;
+  }
+
+  /* ---- Data loading ---- */
+
+  function loadConversations() {
+    try {
+      var raw = storeGet(STORAGE_KEY, false);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+      return parsed;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /* ---- Stats ---- */
+
+  function updateStats(convs) {
+    var total = convs.length;
+    var msgs = 0;
+    var latestDate = null;
+
+    for (var i = 0; i < convs.length; i++) {
+      var c = convs[i];
+      msgs += (c.messages && c.messages.length) ? c.messages.length : 0;
+      if (c.startedAt) {
+        var d = new Date(c.startedAt);
+        if (!latestDate || d > latestDate) latestDate = d;
+      }
+    }
+
+    statTotal.textContent    = total;
+    statMessages.textContent = msgs;
+    statAvg.textContent      = total ? (msgs / total).toFixed(1) : '0';
+    statRecent.textContent   = latestDate ? shortDate(latestDate.toISOString()) : '—';
+
+    if (total === 0) {
+      dashboardSubtitle.textContent = 'No conversations recorded yet.';
+    } else {
+      dashboardSubtitle.textContent =
+        total + ' conversation' + (total !== 1 ? 's' : '') + ' stored in this browser.';
+    }
+  }
+
+  /* ---- Render ---- */
+
+  function renderConversations(convs, query) {
+    conversationList.innerHTML = '';
+
+    var filtered = convs.filter(function (c) {
+      return conversationMatchesQuery(c, query);
+    });
+
+    if (filtered.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'admin-empty';
+      if (query) {
+        empty.innerHTML =
+          '<div class="admin-empty__icon">' +
+          '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>' +
+          '</div>' +
+          '<div class="admin-empty__title">No results for &ldquo;' + escapeHtml(query) + '&rdquo;</div>' +
+          '<div class="admin-empty__text">Try a different search term.</div>';
+      } else {
+        empty.innerHTML =
+          '<div class="admin-empty__icon">' +
+          '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
+          '</div>' +
+          '<div class="admin-empty__title">No conversations yet</div>' +
+          '<div class="admin-empty__text">Chatbot conversations will appear here once visitors interact with the chat widget.</div>';
+      }
+      conversationList.appendChild(empty);
+      return;
+    }
+
+    filtered.forEach(function (conv) {
+      var el = buildConversationCard(conv, query);
+      conversationList.appendChild(el);
+    });
+  }
+
+  function buildConversationCard(conv, query) {
+    var id        = conv.id || 'unknown';
+    var msgCount  = (conv.messages && conv.messages.length) ? conv.messages.length : 0;
+    var firstMsg  = getFirstUserMessage(conv);
+    var preview   = firstMsg.length > 100 ? firstMsg.slice(0, 100) + '…' : firstMsg;
+    var isOpen    = !!openIds[id];
+
+    var article = document.createElement('article');
+    article.className = 'admin-conversation' + (isOpen ? ' is-open' : '');
+    article.dataset.convId = id;
+
+    /* Summary row */
+    var summary = document.createElement('div');
+    summary.className = 'admin-conversation__summary';
+    summary.setAttribute('role', 'button');
+    summary.setAttribute('tabindex', '0');
+    summary.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+    var meta = document.createElement('div');
+    meta.className = 'admin-conversation__meta';
+    meta.innerHTML =
+      '<div class="admin-conversation__id">' + escapeHtml(id) + '</div>' +
+      '<div class="admin-conversation__preview">' + highlightText(preview, query) + '</div>' +
+      '<div class="admin-conversation__time">' + formatDate(conv.startedAt) + '</div>';
+
+    var badges = document.createElement('div');
+    badges.className = 'admin-conversation__badges';
+    badges.innerHTML =
+      '<span class="admin-badge">' +
+      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
+      msgCount + ' msg' + (msgCount !== 1 ? 's' : '') +
+      '</span>';
+
+    var chevron = document.createElement('span');
+    chevron.className = 'admin-conversation__chevron';
+    chevron.innerHTML =
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
+
+    summary.appendChild(meta);
+    summary.appendChild(badges);
+    summary.appendChild(chevron);
+
+    /* Body (messages) */
+    var body = document.createElement('div');
+    body.className = 'admin-conversation__body';
+
+    if (conv.messages && conv.messages.length) {
+      var msgList = document.createElement('div');
+      msgList.className = 'admin-messages';
+
+      conv.messages.forEach(function (msg) {
+        var role = msg.role === 'user' ? 'user' : 'bot';
+        var avatarLabel = role === 'bot' ? 'B' : 'U';
+        var msgEl = document.createElement('div');
+        msgEl.className = 'admin-msg admin-msg--' + role;
+        msgEl.innerHTML =
+          '<div class="admin-msg__avatar">' + avatarLabel + '</div>' +
+          '<div>' +
+            '<div class="admin-msg__bubble">' + highlightText(msg.text || '', query) + '</div>' +
+            '<div class="admin-msg__ts">' + escapeHtml(formatDate(msg.timestamp)) + '</div>' +
+          '</div>';
+        msgList.appendChild(msgEl);
+      });
+
+      body.appendChild(msgList);
+    } else {
+      body.innerHTML = '<p style="opacity:0.5;font-size:0.9rem;">No messages in this conversation.</p>';
+    }
+
+    /* Toggle handler */
+    function toggleConv() {
+      var open = article.classList.toggle('is-open');
+      openIds[id] = open;
+      summary.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    summary.addEventListener('click', toggleConv);
+    summary.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleConv();
+      }
+    });
+
+    article.appendChild(summary);
+    article.appendChild(body);
+    return article;
+  }
+
+  /* ---- Export ---- */
+
+  function exportJSON() {
+    var data = loadConversations();
+    var json = JSON.stringify(data, null, 2);
+    var blob = new Blob([json], { type: 'application/json' });
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'renegade-chat-logs-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  /* ---- Clear ---- */
+
+  function clearAll() {
+    var count = allConversations.length;
+    var confirmed = window.confirm(
+      'Are you sure you want to permanently delete all ' + count +
+      ' conversation' + (count !== 1 ? 's' : '') + '?\n\nThis cannot be undone.'
+    );
+    if (!confirmed) return;
+    storeRemove(STORAGE_KEY, false);
+    openIds = {};
+    allConversations = [];
+    updateStats([]);
+    renderConversations([], searchInput.value.trim());
+  }
+
+  /* ---- Auth ---- */
+
+  function isAuthenticated() {
+    return storeGet(SESSION_KEY, true) === '1';
+  }
+
+  function login() {
+    storeSet(SESSION_KEY, '1', true);
+    loginSection.style.display  = 'none';
+    dashboardSection.style.display = 'block';
+    initDashboard();
+  }
+
+  function logout() {
+    storeRemove(SESSION_KEY, true);
+    dashboardSection.style.display = 'none';
+    loginSection.style.display     = 'flex';
+    passwordInput.value = '';
+    loginError.textContent = '';
+  }
+
+  /* ---- Dashboard init ---- */
+
+  function initDashboard() {
+    allConversations = loadConversations();
+    updateStats(allConversations);
+    renderConversations(allConversations, '');
+  }
+
+  function refreshDashboard() {
+    allConversations = loadConversations();
+    updateStats(allConversations);
+    renderConversations(allConversations, searchInput.value.trim());
+  }
+
+  /* ---- Bootstrap ---- */
+
+  document.addEventListener('DOMContentLoaded', function () {
+    loginSection      = document.getElementById('adminLogin');
+    dashboardSection  = document.getElementById('adminDashboard');
+    loginForm         = document.getElementById('loginForm');
+    passwordInput     = document.getElementById('passwordInput');
+    loginError        = document.getElementById('loginError');
+    logoutBtn         = document.getElementById('logoutBtn');
+    statTotal         = document.getElementById('statTotal');
+    statMessages      = document.getElementById('statMessages');
+    statAvg           = document.getElementById('statAvg');
+    statRecent        = document.getElementById('statRecent');
+    searchInput       = document.getElementById('searchInput');
+    exportBtn         = document.getElementById('exportBtn');
+    clearBtn          = document.getElementById('clearBtn');
+    conversationList  = document.getElementById('conversationList');
+    dashboardSubtitle = document.getElementById('dashboardSubtitle');
+
+    /* Check for existing session */
+    if (isAuthenticated()) {
+      loginSection.style.display  = 'none';
+      dashboardSection.style.display = 'block';
+      initDashboard();
+    }
+
+    /* Login form */
+    loginForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var entered = passwordInput.value;
+      if (entered === PASSWORD) {
+        loginError.textContent = '';
+        login();
+      } else {
+        loginError.textContent = 'Incorrect password. Please try again.';
+        passwordInput.select();
+      }
+    });
+
+    /* Logout */
+    logoutBtn.addEventListener('click', logout);
+
+    /* Search */
+    var searchTimer;
+    searchInput.addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () {
+        renderConversations(allConversations, searchInput.value.trim());
+      }, 200);
+    });
+
+    /* Export */
+    exportBtn.addEventListener('click', exportJSON);
+
+    /* Clear */
+    clearBtn.addEventListener('click', clearAll);
+
+    /* Auto-refresh every 30 seconds while dashboard is visible */
+    setInterval(function () {
+      if (isAuthenticated() && dashboardSection.style.display !== 'none') {
+        refreshDashboard();
+      }
+    }, 30000);
+  });
+
+}());
+</script>
+
+<script src="./app.js" defer></script>
+<script src="./chatbot.js" defer></script>
+</body>
+</html>
