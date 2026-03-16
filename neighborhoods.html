@@ -18,7 +18,7 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>West Linn Neighborhoods Guide | Mortgage & Home Buying Insights — Renegade Home Mortgage</title>
+<title>West Linn Neighborhoods Guide | Mortgage & Home Buying Insights | Renegade Home Mortgage</title>
 <meta name="description" content="Explore all 11 West Linn, Oregon neighborhoods with home values, property types, school zones, and which mortgage programs work best. Your complete local guide from Renegade Home Mortgage.">
 <meta property="og:title" content="West Linn Neighborhoods Guide | Mortgage & Home Buying Insights">
 <meta property="og:description" content="Explore all 11 West Linn neighborhoods with home values, school zones, and which loan programs work best for each area.">
@@ -29,8 +29,36 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link rel="stylesheet" href="./base.css">
 <link rel="stylesheet" href="./style.css">
+<style>
+.neighborhood-map {
+  width: 100%;
+  height: 350px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #0D1117;
+}
+.neighborhood-map-label {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.neighborhood-map-label span {
+  display: inline-block;
+  background: rgba(13, 17, 23, 0.8);
+  color: #F0F0F0;
+  font-family: 'Zodiak', serif;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(230, 57, 70, 0.4);
+}
+</style>
 
 <script type="application/ld+json">
 {
@@ -141,7 +169,7 @@
   <div class="container">
     <nav class="breadcrumb" aria-label="Breadcrumb"><a href="./index.html">Home</a><span>/</span><span>West Linn Neighborhoods</span></nav>
     <h1>West Linn Neighborhoods: A Mortgage Expert's Guide</h1>
-    <p>West Linn — the City of Hills, Trees, and Rivers — comprises 11 unique neighborhoods, each with its own character, price range, and ideal mortgage strategy. With a median home value of $811K and 27,000 residents, understanding the nuances of each neighborhood is essential to making a smart purchase.</p>
+    <p>West Linn, the City of Hills, Trees, and Rivers, comprises 11 unique neighborhoods, each with its own character, price range, and ideal mortgage strategy. With a median home value of $811K and 27,000 residents, understanding the nuances of each neighborhood is essential to making a smart purchase.</p>
   </div>
 </section>
 
@@ -198,11 +226,11 @@
         <span class="neighborhood__price">$550K – $850K typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/bolton.jpg" alt="Map of Bolton neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-bolton" class="neighborhood-map" data-neighborhood="bolton" role="img" aria-label="Map of Bolton neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
-          <p>Bolton is one of West Linn's most historic neighborhoods, nestled along the Willamette River with a character all its own. This is where you'll find charming Victorian-era homes, Craftsman bungalows, and mid-century ranches — many with original architectural details that give the neighborhood its distinctive charm.</p>
+          <p>Bolton is one of West Linn's most historic neighborhoods, nestled along the Willamette River with a character all its own. This is where you'll find charming Victorian-era homes, Craftsman bungalows, and mid-century ranches, many with original architectural details that give the neighborhood its distinctive charm.</p>
           <p>Bolton's proximity to the Willamette Falls Heritage Area and its walkable streets make it a favorite for buyers who value character over square footage. The neighborhood's lower price point (by West Linn standards) makes it one of the few areas where FHA and conventional financing may work without jumbo territory.</p>
           <p>Fixer-uppers are common here, making Bolton attractive to buyers willing to renovate. If you're considering a renovation purchase, ask us about FHA 203(k) or conventional renovation loans that roll the purchase price and renovation costs into a single mortgage.</p>
         </div>
@@ -235,12 +263,12 @@
         <span class="neighborhood__price">$575K – $900K typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/willamette.jpg" alt="Map of Willamette neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-willamette" class="neighborhood-map" data-neighborhood="willamette" role="img" aria-label="Map of Willamette neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
-          <p>Willamette is West Linn's historic heart — a neighborhood brimming with character, mature trees, and a mix of architectural styles that span more than a century. From Victorian homes to mid-century ranches to modest bungalows, Willamette offers an eclectic housing stock that appeals to families, young professionals, and downsizers alike.</p>
-          <p>The neighborhood's proximity to the Willamette commercial district gives residents walkable access to local shops, restaurants, and services. Willamette Primary School is well-regarded, and the community's annual events — including the beloved Old Time Fair — create a strong sense of belonging.</p>
+          <p>Willamette is West Linn's historic heart, a neighborhood brimming with character, mature trees, and a mix of architectural styles that span more than a century. From Victorian homes to mid-century ranches to modest bungalows, Willamette offers an eclectic housing stock that appeals to families, young professionals, and downsizers alike.</p>
+          <p>The neighborhood's proximity to the Willamette commercial district gives residents walkable access to local shops, restaurants, and services. Willamette Primary School is well-regarded, and the community's annual events, including the beloved Old Time Fair, create a strong sense of belonging.</p>
           <p>Like Bolton, Willamette represents one of West Linn's more accessible price points, with some homes still falling within conforming loan limits. This makes it a strong option for first-time buyers who want West Linn schools and community without stretching into jumbo territory.</p>
         </div>
         <div class="neighborhood__meta">
@@ -273,12 +301,12 @@
         <span class="neighborhood__price">$600K – $950K typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/robinwood.jpg" alt="Map of Robinwood neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-robinwood" class="neighborhood-map" data-neighborhood="robinwood" role="img" aria-label="Map of Robinwood neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
           <p>Robinwood straddles West Linn's commercial corridor along Willamette Drive (Highway 43), making it the most connected neighborhood in the city. Mixed-use zoning means you'll find everything from classic ranch homes to newer townhomes, with easy access to the Robinwood Shopping Center and daily amenities.</p>
-          <p>For investors, Robinwood's mix of housing types and proximity to major routes creates strong rental demand — making DSCR and investment property loans particularly relevant here. Single-family homes with ADU (accessory dwelling unit) potential are increasingly common as homeowners look to maximize property value.</p>
+          <p>For investors, Robinwood's mix of housing types and proximity to major routes creates strong rental demand, making DSCR and investment property loans particularly relevant here. Single-family homes with ADU (accessory dwelling unit) potential are increasingly common as homeowners look to maximize property value.</p>
           <p>The neighborhood's price diversity means buyers across a wide range of budgets can find a home. Some properties fall within conforming limits, while updated or larger homes push into jumbo territory.</p>
         </div>
         <div class="neighborhood__meta">
@@ -311,12 +339,12 @@
         <span class="neighborhood__price">$650K – $1.1M typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/sunset.jpg" alt="Map of Sunset neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-sunset" class="neighborhood-map" data-neighborhood="sunset" role="img" aria-label="Map of Sunset neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
           <p>Sunset is West Linn's laid-back waterfront neighborhood, fronting the Willamette River with a relaxed, community-oriented vibe. Homes here range from cozy mid-century ranches to larger custom builds, many with river views or direct water access. The neighborhood's tree-lined streets and proximity to Mary S. Young State Park make it a haven for nature lovers.</p>
-          <p>Sunset Primary School anchors the community, and the neighborhood's quiet, family-friendly streets are popular with young families. The moderate price range means some homes will require jumbo financing while others fit within conforming limits — making it important to have a broker who understands the full range of lending options.</p>
+          <p>Sunset Primary School anchors the community, and the neighborhood's quiet, family-friendly streets are popular with young families. The moderate price range means some homes will require jumbo financing while others fit within conforming limits, making it important to have a broker who understands the full range of lending options.</p>
           <p>Properties closer to the river command a premium, and unique or waterfront homes may require lenders experienced with non-standard property types. Our network includes lenders comfortable with diverse property profiles.</p>
         </div>
         <div class="neighborhood__meta">
@@ -348,11 +376,11 @@
         <span class="neighborhood__price">$800K – $1.3M typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/hidden-springs.jpg" alt="Map of Hidden Springs neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-hidden-springs" class="neighborhood-map" data-neighborhood="hidden-springs" role="img" aria-label="Map of Hidden Springs neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
-          <p>Hidden Springs is one of West Linn's premier family neighborhoods — a newer development of well-built homes on generous lots with excellent access to trails, parks, and top-rated schools. The neighborhood was largely developed in the 1990s and 2000s, giving buyers the advantage of modern construction, open floor plans, and energy-efficient features.</p>
+          <p>Hidden Springs is one of West Linn's premier family neighborhoods, a newer development of well-built homes on generous lots with excellent access to trails, parks, and top-rated schools. The neighborhood was largely developed in the 1990s and 2000s, giving buyers the advantage of modern construction, open floor plans, and energy-efficient features.</p>
           <p>This is quintessential suburban West Linn: cul-de-sac streets, manicured yards, community gatherings, and kids riding bikes after school. Homes here are consistently in high demand, and the neighborhood's price range puts most purchases squarely in jumbo loan territory.</p>
           <p>For families prioritizing schools, Hidden Springs feeds into some of the most sought-after schools in the West Linn-Wilsonville district. The combination of excellent schools, newer construction, and community feel makes this a "move-up" neighborhood for families outgrowing starter homes.</p>
         </div>
@@ -385,7 +413,7 @@
         <span class="neighborhood__price">$700K – $1.2M typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/marylhurst.jpg" alt="Map of Marylhurst neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-marylhurst" class="neighborhood-map" data-neighborhood="marylhurst" role="img" aria-label="Map of Marylhurst neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
@@ -422,13 +450,13 @@
         <span class="neighborhood__price">$850K – $1.5M typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/parker-crest.jpg" alt="Map of Parker Crest neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-parker-crest" class="neighborhood-map" data-neighborhood="parker-crest" role="img" aria-label="Map of Parker Crest neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
           <p>Parker Crest sits on one of West Linn's ridgelines, offering many homes stunning panoramic views of the Tualatin Valley, Cascade foothills, and on clear days, Mt. Hood. This is a newer development with well-appointed homes built primarily in the 2000s and 2010s, featuring modern amenities, high ceilings, and thoughtful landscaping.</p>
-          <p>The neighborhood attracts move-up buyers and established professionals who want quality construction with the views to match. Homes tend to be larger — 3,000 to 5,000 square feet is common — with three-car garages, gourmet kitchens, and outdoor living spaces designed to showcase the views.</p>
-          <p>Nearly every purchase in Parker Crest will require jumbo financing. Our access to wholesale jumbo rates from 50+ lenders means we can often beat the quoted rates from local banks by a meaningful margin — on a million-dollar-plus home, even 0.125% translates to significant savings.</p>
+          <p>The neighborhood attracts move-up buyers and established professionals who want quality construction with the views to match. Homes tend to be larger (3,000 to 5,000 square feet is common) with three-car garages, gourmet kitchens, and outdoor living spaces designed to showcase the views.</p>
+          <p>Nearly every purchase in Parker Crest will require jumbo financing. Our access to wholesale jumbo rates from 50+ lenders means we can often beat the quoted rates from local banks by a meaningful margin. On a million-dollar-plus home, even 0.125% translates to significant savings.</p>
         </div>
         <div class="neighborhood__meta">
           <div class="neighborhood__meta-item">
@@ -458,13 +486,13 @@
         <span class="neighborhood__price">$750K – $1.2M typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/rosemont-summit.jpg" alt="Map of Rosemont Summit neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-rosemont-summit" class="neighborhood-map" data-neighborhood="rosemont-summit" role="img" aria-label="Map of Rosemont Summit neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
-          <p>Rosemont Summit is an established, well-maintained neighborhood centered around Rosemont Ridge Middle School — one of the highest-rated middle schools in Oregon. The neighborhood's excellent school proximity is its defining feature, making it consistently popular with families who prioritize education.</p>
+          <p>Rosemont Summit is an established, well-maintained neighborhood centered around Rosemont Ridge Middle School, one of the highest-rated middle schools in Oregon. The neighborhood's excellent school proximity is its defining feature, making it consistently popular with families who prioritize education.</p>
           <p>Homes here were built primarily in the 1980s and 1990s, offering solid construction with mature landscaping. Many homeowners have invested in updates and renovations over the years, creating a mix of move-in-ready and partially updated properties. Lot sizes tend to be generous, with many homes backing to green spaces or common areas.</p>
-          <p>Rosemont Summit represents West Linn's "sweet spot" — quality construction, excellent schools, established trees, and a neighborhood feel that newer developments are still trying to build. Most homes require jumbo financing, though some may fall near the conforming limit.</p>
+          <p>Rosemont Summit represents West Linn's "sweet spot": quality construction, excellent schools, established trees, and a neighborhood feel that newer developments are still trying to build. Most homes require jumbo financing, though some may fall near the conforming limit.</p>
         </div>
         <div class="neighborhood__meta">
           <div class="neighborhood__meta-item">
@@ -495,13 +523,13 @@
         <span class="neighborhood__price">$1M – $2.5M+ typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/savanna-oaks.jpg" alt="Map of Savanna Oaks neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-savanna-oaks" class="neighborhood-map" data-neighborhood="savanna-oaks" role="img" aria-label="Map of Savanna Oaks neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
-          <p>Savanna Oaks is West Linn's premier luxury neighborhood — a collection of custom and semi-custom homes on expansive lots with some of the most spectacular views in the Portland metro area. This is where West Linn's highest-end real estate lives, with homes featuring resort-style amenities, premium finishes, and architectural distinction.</p>
+          <p>Savanna Oaks is West Linn's premier luxury neighborhood, a collection of custom and semi-custom homes on expansive lots with some of the most spectacular views in the Portland metro area. This is where West Linn's highest-end real estate lives, with homes featuring resort-style amenities, premium finishes, and architectural distinction.</p>
           <p>Many Savanna Oaks homes offer sweeping views of the Tualatin Valley, Mt. Hood, and the Cascade Range. Properties are typically 4,000 to 7,000+ square feet on half-acre or larger lots, with features like wine cellars, home theaters, outdoor kitchens, and multi-car garages. The neighborhood attracts executives, entrepreneurs, and established professionals.</p>
-          <p>Jumbo loans are a certainty in Savanna Oaks, and the size of these loans makes rate comparison critical. On a $1.5M loan, even a 0.125% rate difference equals nearly $28,000 over 30 years. Our wholesale lender network consistently delivers savings that make a real difference at this price point. For veteran buyers, VA jumbo loans — with zero down and no PMI — are an exceptional tool in this neighborhood.</p>
+          <p>Jumbo loans are a certainty in Savanna Oaks, and the size of these loans makes rate comparison critical. On a $1.5M loan, even a 0.125% rate difference equals nearly $28,000 over 30 years. Our wholesale lender network consistently delivers savings that make a real difference at this price point. For veteran buyers, VA jumbo loans (with zero down and no PMI) are an exceptional tool in this neighborhood.</p>
         </div>
         <div class="neighborhood__meta">
           <div class="neighborhood__meta-item">
@@ -531,11 +559,11 @@
         <span class="neighborhood__price">$950K – $2M+ typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/skyline-ridge.jpg" alt="Map of Skyline Ridge neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-skyline-ridge" class="neighborhood-map" data-neighborhood="skyline-ridge" role="img" aria-label="Map of Skyline Ridge neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
-          <p>Skyline Ridge lives up to its name — perched atop one of West Linn's highest points, this newer luxury neighborhood delivers jaw-dropping views of Mt. Hood, the Cascades, and the Willamette Valley. On clear mornings, the sunrise over Mt. Hood from a Skyline Ridge deck is worth the price of admission alone.</p>
+          <p>Skyline Ridge lives up to its name, perched atop one of West Linn's highest points, this newer luxury neighborhood delivers jaw-dropping views of Mt. Hood, the Cascades, and the Willamette Valley. On clear mornings, the sunrise over Mt. Hood from a Skyline Ridge deck is worth the price of admission alone.</p>
           <p>Homes here are predominantly newer construction (2000s-2020s) with premium finishes, smart home technology, and energy-efficient features. Floor plans tend toward open concepts with walls of windows to maximize the views. Many homes include main-level living options, which appeals to a broader range of buyers.</p>
           <p>Like Savanna Oaks, Skyline Ridge is firmly in jumbo territory. The combination of newer construction and higher price points means these homes appraise well, which can ease the jumbo loan process. We work with lenders who understand the West Linn luxury market and can close efficiently on higher-value properties.</p>
         </div>
@@ -567,12 +595,12 @@
         <span class="neighborhood__price">$850K – $1.6M typical</span>
       </div>
       <div class="neighborhood__map">
-        <img src="./assets/maps/bht.jpg" alt="Map of BHT neighborhood in West Linn, Oregon showing neighborhood boundaries" loading="lazy" width="800" height="500">
+        <div id="map-bht" class="neighborhood-map" data-neighborhood="bht" role="img" aria-label="Map of BHT neighborhood in West Linn, Oregon showing neighborhood boundaries"></div>
       </div>
       <div class="neighborhood__details">
         <div class="neighborhood__description">
-          <p>BHT encompasses three interconnected sub-neighborhoods — Barrington Heights, Hidden Creek, and Tanner Creek — that together form one of West Linn's most desirable residential areas. Tree-lined streets, spacious home sites, and a cohesive neighborhood feel define this area.</p>
-          <p>Homes in BHT are predominantly newer construction (1990s-2010s) with quality finishes and thoughtful floor plans. The neighborhood's mature landscaping — unusual for newer developments — gives BHT the established feel of an older neighborhood with the construction quality of a new one. Many homes sit on quarter-acre or larger lots with privacy and elbow room.</p>
+          <p>BHT encompasses three interconnected sub-neighborhoods (Barrington Heights, Hidden Creek, and Tanner Creek) that together form one of West Linn's most desirable residential areas. Tree-lined streets, spacious home sites, and a cohesive neighborhood feel define this area.</p>
+          <p>Homes in BHT are predominantly newer construction (1990s-2010s) with quality finishes and thoughtful floor plans. The neighborhood's mature landscaping, unusual for newer developments, gives BHT the established feel of an older neighborhood with the construction quality of a new one. Many homes sit on quarter-acre or larger lots with privacy and elbow room.</p>
           <p>The BHT area is particularly popular with families seeking space, quality schools, and a strong neighborhood community. Homes here consistently hold their value well, making them a sound long-term investment. Most purchases require jumbo financing, and some higher-end properties approach the $1.5M+ range.</p>
         </div>
         <div class="neighborhood__meta">
@@ -634,7 +662,7 @@
   <div class="container">
     <div class="cta-band reveal">
       <h2>Found Your Neighborhood?</h2>
-      <p>Tell us which area you're looking in and we'll match you with the ideal loan program — and the best rate we can find.</p>
+      <p>Tell us which area you're looking in and we'll match you with the ideal loan program, and the best rate we can find.</p>
       <a href="./contact.html" class="btn btn--lg">Get Neighborhood-Specific Advice</a>
     </div>
   </div>
@@ -666,6 +694,8 @@
   <a href="https://smart1003.preapprovemeapp.com/Start?CompanyID=1997&OfficerID=47" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer" style="width:100%;">Get Pre-Approved Now</a>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="./js/neighborhood-maps.js"></script>
 <script src="./app.js" defer></script>
 <script src="./chatbot.js" defer></script>
 </body>

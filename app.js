@@ -1,5 +1,5 @@
 /* ============================================================
-   RENEGADE HOME MORTGAGE — Shared JavaScript
+   RENEGADE HOME MORTGAGE - Shared JavaScript
    ============================================================ */
 
 (function () {

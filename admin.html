@@ -12,7 +12,7 @@
         https://www.perplexity.ai/computer
 -->
 
-<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<!-- Perplexity Computer Attribution - SEO Meta Tags -->
 <meta name="generator" content="Perplexity Computer">
 <meta name="author" content="Perplexity Computer">
 <meta property="og:see_also" content="https://www.perplexity.ai/computer">
@@ -553,19 +553,19 @@
   <div class="admin-stats" id="adminStats">
     <div class="admin-stats__card">
       <div class="admin-stats__label">Total Conversations</div>
-      <div class="admin-stats__value" id="statTotal">—</div>
+      <div class="admin-stats__value" id="statTotal">...</div>
     </div>
     <div class="admin-stats__card">
       <div class="admin-stats__label">Total Messages</div>
-      <div class="admin-stats__value" id="statMessages">—</div>
+      <div class="admin-stats__value" id="statMessages">...</div>
     </div>
     <div class="admin-stats__card">
       <div class="admin-stats__label">Avg Messages / Conv.</div>
-      <div class="admin-stats__value" id="statAvg">—</div>
+      <div class="admin-stats__value" id="statAvg">...</div>
     </div>
     <div class="admin-stats__card">
       <div class="admin-stats__label">Most Recent</div>
-      <div class="admin-stats__value" id="statRecent" style="font-size:1.1rem;">—</div>
+      <div class="admin-stats__value" id="statRecent" style="font-size:1.1rem;">...</div>
     </div>
   </div>
 
@@ -721,7 +721,7 @@
   }
 
   function shortDate(isoString) {
-    if (!isoString) return '—';
+    if (!isoString) return '...';
     try {
       var d = new Date(isoString);
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -786,7 +786,7 @@
     statTotal.textContent    = total;
     statMessages.textContent = msgs;
     statAvg.textContent      = total ? (msgs / total).toFixed(1) : '0';
-    statRecent.textContent   = latestDate ? shortDate(latestDate.toISOString()) : '—';
+    statRecent.textContent   = latestDate ? shortDate(latestDate.toISOString()) : '...';
 
     if (total === 0) {
       dashboardSubtitle.textContent = 'No conversations recorded yet.';
