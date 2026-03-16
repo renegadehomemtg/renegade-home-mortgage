@@ -1,56 +1,10 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/*.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "css/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "js/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "images/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "fonts/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "favicon.ico",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/loan-status",
-      "dest": "/api/loan-status.py"
-    },
-    {
-      "src": "/api/get-app",
-      "dest": "/api/get-app.py"
-    },
-    {
-      "src": "/api/chat-notify",
-      "dest": "/api/chat-notify.py"
-    },
-    {
-      "src": "/api/referral",
-      "dest": "/api/referral.py"
-    },
-    {
-      "src": "/api/health",
-      "dest": "/api/health.py"
-    }
+  "rewrites": [
+    { "source": "/api/loan-status", "destination": "/api/loan-status" },
+    { "source": "/api/get-app", "destination": "/api/get-app" },
+    { "source": "/api/chat-notify", "destination": "/api/chat-notify" },
+    { "source": "/api/referral", "destination": "/api/referral" },
+    { "source": "/api/health", "destination": "/api/health" }
   ],
   "headers": [
     {
