@@ -467,27 +467,24 @@
 
     setLoading(true);
 
-    fetch('https://api.nextgenpam.com/Feed/Receive?feedName=Import', {
+    fetch('/api/referral', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-PAM-S': 'd40509a5-7fb8-476d-a99b-86777bca1111'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
     })
     .then(function (response) {
-      if (response.ok) {
-        return response;
-      }
-      // Try to extract error detail from body
-      return response.text().then(function (text) {
-        throw new Error(text || ('API error: ' + response.status));
-      });
+      return response.json();
     })
-    .then(function () {
+    .then(function (data) {
       setLoading(false);
-      successEl.style.display = 'flex';
-      form.reset();
+      if (data.success) {
+        successEl.style.display = 'flex';
+        form.reset();
+      } else {
+        showError(data.message || 'We couldn\'t submit the referral right now. Please try again or call us at (503) 929-4615.');
+      }
     })
     .catch(function (err) {
       setLoading(false);

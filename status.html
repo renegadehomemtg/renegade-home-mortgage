@@ -83,7 +83,8 @@
   color: var(--color-text);
 }
 
-.status-lookup input[type="email"] {
+.status-lookup input[type="email"],
+.status-lookup input[type="tel"] {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   background: var(--color-surface);
@@ -94,13 +95,15 @@
   transition: border-color var(--transition-interactive), box-shadow var(--transition-interactive);
 }
 
-.status-lookup input[type="email"]:focus {
+.status-lookup input[type="email"]:focus,
+.status-lookup input[type="tel"]:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
-.status-lookup input[type="email"]::placeholder {
+.status-lookup input[type="email"]::placeholder,
+.status-lookup input[type="tel"]::placeholder {
   color: var(--color-text-faint);
 }
 
@@ -802,6 +805,22 @@
           <p id="email-hint" style="font-size: var(--text-xs); color: var(--color-text-faint); margin-top: var(--space-2);">Use the email address you provided on your loan application.</p>
         </div>
 
+        <div class="form-group">
+          <label for="borrower-phone4">Last 4 Digits of Your Phone Number</label>
+          <input
+            type="tel"
+            id="borrower-phone4"
+            name="borrower-phone4"
+            required
+            maxlength="4"
+            pattern="[0-9]{4}"
+            placeholder="1234"
+            inputmode="numeric"
+            aria-describedby="phone-hint"
+          >
+          <p id="phone-hint" style="font-size: var(--text-xs); color: var(--color-text-faint); margin-top: var(--space-2);">The phone number on file with your loan application.</p>
+        </div>
+
         <button type="submit" class="btn btn--primary btn--lg" id="lookup-btn" style="width: 100%;">
           Check Loan Status
         </button>
@@ -990,20 +1009,15 @@
 (function () {
   'use strict';
 
-  // ── Config ──────────────────────────────────────────────────────────────────
-  var API_ENDPOINT = 'https://api.nextgenpam.com/Feed/Receive?feedName=Export';
-  var API_KEY      = 'd40509a5-7fb8-476d-a99b-86777bca1111';
-  var COMPANY_ID   = 1997;
-  var OFFICER_ID   = 47;
-  var PORTAL_URL   = 'https://manage.preapprovemeapp.com/Portal/' + COMPANY_ID + '/' + OFFICER_ID + '/Landing';
-
-  // ── Condition status code mapping (PAM API uses numeric codes) ──────────────
-  var CONDITION_STATUS = {
-    1: { label: 'Outstanding', badge: 'condition-badge--outstanding' },
-    2: { label: 'Received',    badge: 'condition-badge--satisfied'   },
-    3: { label: 'Waived',      badge: 'condition-badge--waived'      },
-    4: { label: 'In Review',   badge: 'condition-badge--review'      },
-    5: { label: 'Cleared',     badge: 'condition-badge--satisfied'   }
+  // ── Condition badge mapping (server returns string statuses) ────────────────
+  var CONDITION_BADGES = {
+    'Outstanding': 'condition-badge--outstanding',
+    'Received':    'condition-badge--satisfied',
+    'Waived':      'condition-badge--waived',
+    'In Review':   'condition-badge--review',
+    'Cleared':     'condition-badge--satisfied',
+    'Pending':     'condition-badge--outstanding',
+    'Complete':    'condition-badge--satisfied'
   };
 
   // ── SVG icon helpers ─────────────────────────────────────────────────────────
@@ -1018,6 +1032,7 @@
   // ── DOM refs ─────────────────────────────────────────────────────────────────
   var form          = document.getElementById('status-lookup-form');
   var emailInput    = document.getElementById('borrower-email');
+  var phone4Input   = document.getElementById('borrower-phone4');
   var lookupBtn     = document.getElementById('lookup-btn');
   var errorBox      = document.getElementById('lookup-error');
   var infoBox       = document.getElementById('lookup-info');
@@ -1103,34 +1118,24 @@
     smsSendBtn.disabled = true;
     smsSendBtn.textContent = 'Sending\u2026';
 
-    // Use the PAM API to send an SMS invite
-    var payload = JSON.stringify({
-      CompanyID: COMPANY_ID,
-      LoanOfficerID: OFFICER_ID,
-      Version: '2.0',
-      Loan: {
-        Applications: [{
-          PrimaryBorrower: {
-            Phone: phone,
-            SendTextInvitation: true
-          }
-        }]
-      }
-    });
-
-    fetch('https://api.nextgenpam.com/Feed/Receive?feedName=Import', {
+    fetch('/api/get-app', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-PAM-S': API_KEY
-      },
-      body: payload
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: phone
+      })
     })
     .then(function (res) {
       smsSendBtn.disabled = false;
       smsSendBtn.textContent = 'Send Link';
-      // Regardless of API response, show success since we can't guarantee
-      // the exact Import API behavior — the link will be sent
+      if (res.status === 429) {
+        smsStatus.className = 'sms-modal__status sms-modal__status--error';
+        smsStatus.textContent = 'Too many attempts. Please wait a few minutes and try again.';
+        return;
+      }
       smsStatus.className = 'sms-modal__status sms-modal__status--success';
       smsStatus.textContent = 'App download link sent! Check your text messages.';
       setTimeout(closeSmsModal, 3000);
@@ -1138,7 +1143,6 @@
     .catch(function () {
       smsSendBtn.disabled = false;
       smsSendBtn.textContent = 'Send Link';
-      // Fallback: direct them to the app stores
       smsStatus.className = 'sms-modal__status sms-modal__status--error';
       smsStatus.textContent = 'Unable to send. Search "Pre Approve Me" in the App Store or Google Play.';
     });
@@ -1197,32 +1201,9 @@
     }
   }
 
-  // ── Extract borrower name from the nested Applications structure ─────────────
-  function getBorrowerName(loan) {
-    try {
-      var apps = loan.Applications;
-      if (apps && apps.length > 0) {
-        var b = apps[0].PrimaryBorrower;
-        if (b) {
-          return [b.FirstName || '', b.LastName || ''].filter(Boolean).join(' ');
-        }
-      }
-    } catch (e) {}
-    // Fallback to flat fields
-    return [loan.BorrowerFirstName || loan.FirstName || '', loan.BorrowerLastName || loan.LastName || ''].filter(Boolean).join(' ');
-  }
-
-  // ── Build milestones from the actual PAM Milestones array ───────────────────
-  function buildMilestones(loan) {
-    var milestones = loan.Milestones || [];
-
-    // Filter to only borrower-facing milestones (InternalMilestone === false)
-    var visible = milestones.filter(function (m) { return !m.InternalMilestone; });
-
-    // Sort by DisplayOrder
-    visible.sort(function (a, b) { return (a.DisplayOrder || 0) - (b.DisplayOrder || 0); });
-
-    if (visible.length === 0) {
+  // ── Build milestones from pre-sanitized server data ─────────────────────────
+  function buildMilestones(milestones) {
+    if (!milestones || milestones.length === 0) {
       elMilestones.innerHTML = '<li class="conditions-empty">No milestones available for this loan yet.</li>';
       elProgressPct.textContent = '0%';
       elProgressFill.style.width = '0%';
@@ -1231,20 +1212,20 @@
 
     // Find the last completed milestone
     var lastCompletedIdx = -1;
-    visible.forEach(function (m, i) {
+    milestones.forEach(function (m, i) {
       if (m.CompletionDate) lastCompletedIdx = i;
     });
 
     var activeIdx = lastCompletedIdx + 1;
-    if (activeIdx >= visible.length) activeIdx = visible.length - 1;
+    if (activeIdx >= milestones.length) activeIdx = milestones.length - 1;
 
     var completedCount = lastCompletedIdx + 1;
-    var pct = Math.round((completedCount / visible.length) * 100);
+    var pct = Math.round((completedCount / milestones.length) * 100);
     elProgressPct.textContent = pct + '%';
     elProgressFill.style.width = pct + '%';
 
     var html = '';
-    visible.forEach(function (m, i) {
+    milestones.forEach(function (m, i) {
       var completed = !!m.CompletionDate;
       var active = !completed && i === activeIdx && lastCompletedIdx >= 0;
 
@@ -1265,7 +1246,6 @@
         dateHtml = '<div class="milestone__date">In Progress</div>';
       }
 
-      // Show description if available (e.g. conditional approval message)
       var descHtml = '';
       if (m.Description) {
         descHtml = '<div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-1);line-height:1.5;">' + escHtml(m.Description) + '</div>';
@@ -1284,17 +1264,16 @@
     elMilestones.innerHTML = html;
   }
 
-  // ── Build conditions — title + due date + badge only (no descriptions) ─────
-  function buildConditions(loan) {
-    var conditions = loan.Conditions || [];
+  // ── Build conditions from pre-sanitized server data (Name/Status/DueDate) ──
+  function buildConditions(conditions) {
     if (!Array.isArray(conditions)) conditions = [];
 
-    // Count outstanding (status 1) and in-review (status 4) conditions
+    // Count outstanding/pending/open conditions
     var outstandingCount = conditions.filter(function (c) {
-      return c.Status === 1 || c.Status === 4;
+      var s = (c.StatusLabel || c.Status || '').toLowerCase();
+      return s === 'outstanding' || s === 'pending' || s === 'open' || s === 'in review';
     }).length;
 
-    // Update tab badge
     elCondCount.textContent = outstandingCount;
     if (outstandingCount > 0) {
       elCondCount.classList.add('status-tab__count--warn');
@@ -1310,8 +1289,8 @@
     var html = '';
     conditions.forEach(function (cond) {
       var name = cond.Name || 'Condition';
-      var statusCode = cond.Status;
-      var statusInfo = CONDITION_STATUS[statusCode] || { label: 'Pending', badge: 'condition-badge--outstanding' };
+      var statusLabel = cond.StatusLabel || cond.Status || 'Pending';
+      var badgeCls = CONDITION_BADGES[statusLabel] || 'condition-badge--outstanding';
       var dueDate = cond.DueDate ? formatDate(cond.DueDate) : null;
 
       html += '<li class="condition-item">';
@@ -1321,7 +1300,7 @@
         html += '<div class="condition-item__due">Due: ' + escHtml(dueDate) + '</div>';
       }
       html +=   '</div>';
-      html +=   '<span class="condition-badge ' + statusInfo.badge + '">' + escHtml(statusInfo.label) + '</span>';
+      html +=   '<span class="condition-badge ' + badgeCls + '">' + escHtml(statusLabel) + '</span>';
       html += '</li>';
     });
 
@@ -1330,16 +1309,16 @@
 
   // ── Populate the results UI ─────────────────────────────────────────────────
   function populateResults(loan) {
-    var loanNum = loan.PamID || loan.ReferenceNumber || loan.LoanNumber || '\u2014';
-    var borrowerName = getBorrowerName(loan);
+    var loanNum = loan.PamID || '\u2014';
+    var borrowerName = loan.BorrowerName || '';
     var status = loan.Status || 'In Progress';
 
     elLoanNumber.textContent   = 'Loan #' + loanNum;
     elBorrowerName.textContent = borrowerName;
     elStatusBadge.textContent  = status;
 
-    // Set the Login to Upload link
-    elLoginBtn.href = PORTAL_URL;
+    // Set the Login to Upload link from API response
+    elLoginBtn.href = loan.PortalURL || '#';
 
     // Reset to Status tab
     tabs.forEach(function (t) {
@@ -1353,8 +1332,8 @@
     document.getElementById('tab-status').setAttribute('aria-selected', 'true');
     document.getElementById('panel-status').classList.add('tab-panel--active');
 
-    buildMilestones(loan);
-    buildConditions(loan);
+    buildMilestones(loan.Milestones || []);
+    buildConditions(loan.Conditions || []);
 
     elContactNudge.style.display = 'block';
 
@@ -1363,66 +1342,47 @@
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // ── Main fetch ───────────────────────────────────────────────────────────────
-  function lookupLoan(email) {
+  // ── Main fetch via server proxy ─────────────────────────────────────────────
+  function lookupLoan(email, phoneLast4) {
     clearMessages();
     setLoading(true);
     hideAllResults();
 
-    var payload = JSON.stringify({
-      CompanyID:      COMPANY_ID,
-      LoanOfficerID:  OFFICER_ID,
-      BorrowerEmail:  email,
-      Version:        '2.0'
-    });
-
-    fetch(API_ENDPOINT, {
-      method:  'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-PAM-S':      API_KEY
-      },
-      body: payload
+    fetch('/api/loan-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, phone_last4: phoneLast4 })
     })
     .then(function (response) {
+      if (response.status === 429) {
+        setLoading(false);
+        showError('Too many attempts. Please wait a few minutes and try again.');
+        return null;
+      }
       if (!response.ok) {
-        return response.text().then(function (text) {
-          throw new Error('API returned ' + response.status + (text ? ': ' + text : ''));
+        return response.json().catch(function () { return {}; }).then(function (body) {
+          throw new Error(body.message || 'Unable to look up loan status.');
         });
       }
       return response.json();
     })
     .then(function (data) {
+      if (!data) return; // 429 already handled
+
       setLoading(false);
 
-      var loans = null;
-
-      // Check for error response
-      if (data && data.Success === false) {
-        throw new Error(data.Message || 'API error');
-      }
-
-      // v2.0 structure: data.Loan.Loans
-      if (data && data.Loan && Array.isArray(data.Loan.Loans)) {
-        loans = data.Loan.Loans;
-      }
-      // Fallback: flat array or other wrappers
-      else if (Array.isArray(data)) {
-        loans = data;
-      } else if (data && Array.isArray(data.Loans)) {
-        loans = data.Loans;
-      } else if (data && typeof data === 'object' && data.PamID) {
-        loans = [data];
-      }
-
-      if (!loans || loans.length === 0) {
+      if (!data.found) {
+        // Show API message or the default "no loan found" section
+        var msg = data.message || '';
+        if (msg) {
+          document.querySelector('#no-loan-found .status-fallback p').textContent = msg;
+        }
         noLoanSection.style.display = 'block';
         noLoanSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
 
-      // Pick the first loan (most relevant)
-      populateResults(loans[0]);
+      populateResults(data.loan);
     })
     .catch(function (err) {
       setLoading(false);
@@ -1431,12 +1391,8 @@
       var userMsg;
       if (!navigator.onLine) {
         userMsg = 'It looks like you\'re offline. Please check your connection and try again.';
-      } else if (err.message && err.message.indexOf('404') !== -1) {
-        noLoanSection.style.display = 'block';
-        noLoanSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        return;
       } else {
-        userMsg = 'We weren\'t able to retrieve your loan status right now. Please try again in a moment, or contact us directly at michael@renegadehomemtg.com.';
+        userMsg = err.message || 'We weren\'t able to retrieve your loan status right now. Please try again in a moment, or contact us directly at michael@renegadehomemtg.com.';
       }
       showError(userMsg);
     });
@@ -1448,6 +1404,7 @@
     clearMessages();
 
     var email = (emailInput.value || '').trim();
+    var phone4 = (phone4Input.value || '').trim();
 
     if (!email) {
       showError('Please enter your email address.');
@@ -1461,7 +1418,13 @@
       return;
     }
 
-    lookupLoan(email);
+    if (!phone4 || !/^[0-9]{4}$/.test(phone4)) {
+      showError('Please enter the last 4 digits of your phone number.');
+      phone4Input.focus();
+      return;
+    }
+
+    lookupLoan(email, phone4);
   });
 
   // ── "Try Again" button ───────────────────────────────────────────────────────
@@ -1469,6 +1432,7 @@
     tryAgainBtn.addEventListener('click', function () {
       noLoanSection.style.display = 'none';
       emailInput.value = '';
+      phone4Input.value = '';
       emailInput.focus();
       window.scrollTo({ top: emailInput.getBoundingClientRect().top + window.scrollY - 120, behavior: 'smooth' });
     });
