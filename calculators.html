@@ -210,11 +210,16 @@
 
 <script>
 (function() {
-  /* On the dedicated page, let the Vortex embed show its full content.
-     We still set a generous height and let the embed fill naturally.
-     No aggressive clipping needed here since this is the calculator's own page. */
+  /* Vortex embed height management.
+     The embed sends vortex-resize postMessages but often reports the *total*
+     document height of ALL calculator tabs (visible + hidden), resulting in
+     300k+ px values. We cap accepted heights to a sane maximum and fall
+     back to responsive fixed heights when no valid message arrives. */
   var calc = document.getElementById('vortex-calc');
   if (!calc) return;
+
+  var MIN_H = 600;
+  var MAX_H = 1200; /* no single calculator tab exceeds ~1100px */
 
   function setCalcHeight() {
     var w = window.innerWidth;
@@ -230,11 +235,15 @@
   setCalcHeight();
   window.addEventListener('resize', setCalcHeight);
 
-  /* Listen for Vortex resize messages on the dedicated page — 
-     here we CAN let it auto-size since there's no whitespace clipping needed. */
+  /* Only accept resize messages within the sane range */
   window.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'vortex-resize' && e.data.height) {
-      calc.style.height = e.data.height + 'px';
+      var h = parseInt(e.data.height, 10);
+      if (h >= MIN_H && h <= MAX_H) {
+        calc.style.height = h + 'px';
+      }
+      /* Ignore values outside the range — they're the inflated
+         all-tabs-combined height the embed sometimes reports. */
     }
   });
 })();
