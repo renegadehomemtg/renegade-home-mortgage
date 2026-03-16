@@ -1373,21 +1373,18 @@
 }
 
 .about-photo {
-  aspect-ratio: 3/4;
   background: var(--color-surface-2);
   border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   border: 1px solid var(--color-divider);
 }
 
 .about-photo img {
-  width: 80%;
+  width: 100%;
   height: auto;
+  display: block;
   object-fit: contain;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
 }
 
 .about-photo svg {
