@@ -147,10 +147,10 @@
     <div class="hero__content">
       <div class="hero__badge">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        West Linn, Oregon
+        <span data-geo="badge">West Linn, Oregon</span>
       </div>
-      <h1>Your Neighborhood <em>Mortgage Expert</em></h1>
-      <p>We're not a big bank. We're your neighbors in West Linn, and we shop 50+ lenders to find you the best mortgage rate, every single time.</p>
+      <h1 data-geo="headline">Your Neighborhood <em>Mortgage Expert</em></h1>
+      <p data-geo="heroParagraph">We're not a big bank. We're your neighbors in West Linn, and we shop 50+ lenders to find you the best mortgage rate, every single time.</p>
       <div class="hero__actions">
         <a href="./book.html" class="btn btn--primary btn--lg">Schedule a Discovery Call</a>
         <a href="./programs.html" class="btn btn--secondary btn--lg">View Loan Programs</a>
@@ -250,7 +250,7 @@
 
       <a href="./programs.html#jumbo" class="card card--link reveal">
         <h3 class="card__title">Jumbo Loans</h3>
-        <p class="card__text">West Linn's median home is $811K, well into jumbo territory. We specialize in large loans with surprisingly competitive terms.</p>
+        <p class="card__text" data-geo="jumboCardText">West Linn's median home is $811K, well into jumbo territory. We specialize in large loans with surprisingly competitive terms.</p>
         <span class="card__tag">$750K+</span>
       </a>
 
@@ -278,21 +278,21 @@
   <div class="container">
     <div class="section-header reveal">
       <span class="section-header__label">Local Insight</span>
-      <h2>West Linn Real Estate Corner</h2>
-      <p>With a median home value of $811K and 78% owner-occupied homes, West Linn is one of Oregon's most desirable communities. Here's what you need to know.</p>
+      <h2 data-geo="spotlightTitle">West Linn Real Estate Corner</h2>
+      <p data-geo="spotlightIntro">With a median home value of $811K and 78% owner-occupied homes, West Linn is one of Oregon's most desirable communities. Here's what you need to know.</p>
     </div>
 
     <div class="grid grid--2">
       <div class="card reveal">
         <h3 class="card__title">Market Snapshot</h3>
-        <p class="card__text">West Linn's 27,000 residents enjoy a median household income of $150K, well above state and national averages. The city's 11 distinct neighborhoods range from historic Bolton and Willamette to the luxury developments of Savanna Oaks and Skyline Ridge. Understanding which loan program fits which neighborhood is key to a smart purchase.</p>
-        <a href="./neighborhoods.html" class="btn btn--secondary btn--sm mt-6" style="display:inline-flex;">Explore All 11 Neighborhoods</a>
+        <p class="card__text" data-geo="marketSnapshot">West Linn's 27,000 residents enjoy a median household income of $150K, well above state and national averages. The city's 11 distinct neighborhoods range from historic Bolton and Willamette to the luxury developments of Savanna Oaks and Skyline Ridge. Understanding which loan program fits which neighborhood is key to a smart purchase.</p>
+        <a href="./neighborhoods.html" class="btn btn--secondary btn--sm mt-6" style="display:inline-flex;" data-geo="marketSnapshotCta">Explore All 11 Neighborhoods</a>
       </div>
 
       <div class="card reveal">
-        <h3 class="card__title">Why Jumbo Matters Here</h3>
-        <p class="card__text">With the 2026 conforming loan limit at $766,550, most West Linn purchases require a jumbo loan. As an independent broker, we access wholesale jumbo rates that big banks can't match. Whether you're buying in Savanna Oaks or renovating a Bolton Victorian, we structure loans that fit West Linn's unique market.</p>
-        <a href="./blog/jumbo-loans-west-linn.html" class="btn btn--secondary btn--sm mt-6" style="display:inline-flex;">Read Our Jumbo Loan Guide</a>
+        <h3 class="card__title" data-geo="jumboTitle">Why Jumbo Matters Here</h3>
+        <p class="card__text" data-geo="jumboText">With the 2026 conforming loan limit at $766,550, most West Linn purchases require a jumbo loan. As an independent broker, we access wholesale jumbo rates that big banks can't match. Whether you're buying in Savanna Oaks or renovating a Bolton Victorian, we structure loans that fit West Linn's unique market.</p>
+        <a href="./blog/jumbo-loans-west-linn.html" class="btn btn--secondary btn--sm mt-6" style="display:inline-flex;" data-geo="jumboCta">Read Our Jumbo Loan Guide</a>
       </div>
     </div>
   </div>
@@ -328,7 +328,7 @@
   <div class="container">
     <div class="section-header section-header--center reveal">
       <span class="section-header__label">What Our Neighbors Say</span>
-      <h2>Real Reviews from Real West Linn Families</h2>
+      <h2 data-geo="testimonialSection">Real Reviews from Real West Linn Families</h2>
     </div>
 
     <div class="grid grid--3">
@@ -361,8 +361,8 @@
         <img src="./assets/whatsup-logo.jpg" alt="What's Up West Linn">
       </div>
       <div class="community-band__content">
-        <h3>Part of the West Linn Community</h3>
-        <p>We're more than a mortgage company. We're your neighbors. Check out <a href="https://whatsupwestlinn.com" target="_blank" rel="noopener noreferrer" style="color: #E63946; font-weight: 500;">WhatsUpWestLinn.com</a> for local events, news, and everything happening in the City of Hills, Trees, and Rivers.</p>
+        <h3 data-geo="communityTitle">Part of the West Linn Community</h3>
+        <p data-geo="communityText">We're more than a mortgage company. We're your neighbors. Check out <a href="https://whatsupwestlinn.com" target="_blank" rel="noopener noreferrer" style="color: #E63946; font-weight: 500;">WhatsUpWestLinn.com</a> for local events, news, and everything happening in the City of Hills, Trees, and Rivers.</p>
       </div>
       <a href="https://whatsupwestlinn.com" target="_blank" rel="noopener noreferrer" class="btn btn--accent">Visit WhatsUpWestLinn</a>
     </div>
@@ -603,6 +603,7 @@
   <a href="https://smart1003.preapprovemeapp.com/Start?CompanyID=1997&OfficerID=47" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer" style="width:100%;">Get Pre-Approved Now</a>
 </div>
 
+<script src="./geo.js" defer></script>
 <script src="./app.js" defer></script>
 <script src="./chatbot.js" defer></script>
 </body>
