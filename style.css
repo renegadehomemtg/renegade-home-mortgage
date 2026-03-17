@@ -818,7 +818,8 @@
   margin-top: var(--space-4);
   line-height: 1.7;
   max-width: none;
-  text-align: center;
+  text-align: left;
+  width: 100%;
 }
 
 /* ============================================================
