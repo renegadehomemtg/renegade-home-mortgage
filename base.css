@@ -49,6 +49,8 @@ p, li, figcaption { text-wrap: pretty; max-width: 72ch; }
   }
 }
 
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
 button { cursor: pointer; background: none; border: none; }
 table { border-collapse: collapse; width: 100%; }
 
