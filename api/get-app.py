@@ -64,7 +64,7 @@ class handler(BaseHTTPRequestHandler):
             }).encode())
             return
 
-        ref_id = uuid.uuid4().hex[:12]
+        ref_id = str(uuid.uuid4())
 
         payload = {
             "Version": "1.0",
@@ -81,7 +81,7 @@ class handler(BaseHTTPRequestHandler):
                 }
             ],
             "Loan": {
-                "ReferenceNumber": f"1997_{ref_id}",
+                "ReferenceNumber": ref_id,
                 "Servicers": {
                     "LoanOfficer": {
                         "Email": LO_EMAIL
@@ -119,16 +119,24 @@ class handler(BaseHTTPRequestHandler):
                 signup_msg = (
                     f"New app signup: {first_name} {last_name} "
                     f"({email}, {phone})"
-                    f"{' — PAM import OK' if pam_ok else ' — PAM returned: ' + result.get('Message', 'unknown')}"
+                    f"{' -- PAM import OK' if pam_ok else ' -- PAM returned: ' + result.get('Message', 'unknown')}"
                 )
                 send_ntfy_push(signup_msg)
 
-                self.end_headers()
-                self.wfile.write(json.dumps({
-                    "success": True,
-                    "message": "We've received your info! Check your email and phone for a link to download the app."
-                }).encode())
-                return
+                if pam_ok:
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "success": True,
+                        "message": "We've received your info! Check your email and phone for a link to download the app."
+                    }).encode())
+                    return
+                else:
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "success": False,
+                        "message": "Something went wrong creating your account. Please try again or call us directly."
+                    }).encode())
+                    return
 
         except urllib.error.HTTPError as e:
             error_body = e.read().decode() if e.fp else str(e)
