@@ -2,7 +2,8 @@
 // Sets a cookie with the detected city so the client-side JS can swap content instantly.
 // This runs at the edge before the page is served, so the cookie is available on first load.
 
-import { NextResponse } from 'next/server';
+import { geolocation } from '@vercel/functions';
+import { next } from '@vercel/functions';
 
 export const config = {
   matcher: ['/', '/index.html'],
@@ -23,25 +24,22 @@ const cityMapping = {
 };
 
 export default function middleware(request) {
-  const city = request.headers.get('x-vercel-ip-city') || '';
+  const { city } = geolocation(request);
+  const detectedCity = city || '';
   const url = new URL(request.url);
   const overrideCity = url.searchParams.get('geo');
 
-  const lookupCity = (overrideCity || city).toLowerCase().trim();
+  const lookupCity = (overrideCity || detectedCity).toLowerCase().trim();
   const areaSlug = cityMapping[lookupCity] || 'default';
 
-  const response = NextResponse.next();
+  // Build Set-Cookie header manually
+  const cookieValue = `renegade-geo=${areaSlug}; Max-Age=3600; Path=/; SameSite=Lax`;
 
-  // Set geo cookie (expires in 1 hour so it stays fresh)
-  response.cookies.set('renegade-geo', areaSlug, {
-    maxAge: 3600,
-    path: '/',
-    sameSite: 'lax',
+  return next({
+    headers: {
+      'Set-Cookie': cookieValue,
+      'x-geo-city': areaSlug,
+      'x-geo-detected': detectedCity || 'unknown',
+    },
   });
-
-  // Also set headers for debugging
-  response.headers.set('x-geo-city', areaSlug);
-  response.headers.set('x-geo-detected', city || 'unknown');
-
-  return response;
 }
