@@ -1866,7 +1866,7 @@
    ============================================================ */
 
 .get-app-form-wrap {
-  max-width: 560px;
+  max-width: var(--content-wide);
   margin: var(--space-10) auto 0;
 }
 
@@ -1899,11 +1899,12 @@
   color: var(--color-text-muted);
   line-height: 1.6;
   margin: 0;
+  max-width: none;
 }
 
 .get-app-form__grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: var(--space-4);
   margin-bottom: var(--space-6);
 }
@@ -1943,7 +1944,8 @@
 }
 
 .get-app-form__submit {
-  width: 100%;
+  width: 50%;
+  margin-left: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1992,6 +1994,12 @@
 .get-app-form__error a {
   color: var(--color-primary);
   font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .get-app-form__grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 560px) {
