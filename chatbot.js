@@ -25,7 +25,7 @@
   /* ───────── CONSTANTS ───────── */
   var STORAGE_KEY = 'renegade_chat_logs';
   var SMART_1003 = 'https://smart1003.preapprovemeapp.com/Start?CompanyID=1997&OfficerID=47';
-  var BOOKING_URL = 'https://calendar.app.google/7uSLjHSKtZueV7a39';
+  var BOOKING_URL = './book.html';
   var MLO_NAME = 'Michael';
   var COMPANY = 'Renegade Home Mortgage';
   var NMLS = '227081';
