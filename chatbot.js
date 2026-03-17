@@ -25,6 +25,7 @@
   /* ───────── CONSTANTS ───────── */
   var STORAGE_KEY = 'renegade_chat_logs';
   var SMART_1003 = 'https://smart1003.preapprovemeapp.com/Start?CompanyID=1997&OfficerID=47';
+  var BOOKING_URL = 'https://calendar.app.google/7uSLjHSKtZueV7a39';
   var MLO_NAME = 'Michael';
   var COMPANY = 'Renegade Home Mortgage';
   var NMLS = '227081';
@@ -149,7 +150,7 @@
     },
     contact: {
       keywords: ['contact', 'phone', 'email', 'call', 'reach out', 'talk to someone', 'schedule', 'consultation', 'appointment'],
-      response: "We'd love to hear from you! Here's how to reach us:\n\n• **Phone:** (503) 974-3571\n• **Email:** michael@renegadehomemtg.com\n• **Office:** West Linn, OR 97068\n• **Hours:** Monday-Friday 8am-6pm, weekends by appointment\n\nOr start your application online anytime:\n<a href='" + SMART_1003 + "' target='_blank' rel='noopener noreferrer'>Start Your Application →</a>\n\nInitial consultations are free, no obligation, and typically take about 15 minutes. We'll give you honest answers. No pressure, no hard sell."
+      response: "We'd love to hear from you! Here's how to reach us:\n\n<a href='" + BOOKING_URL + "' target='_blank' rel='noopener noreferrer'>Schedule a Free Discovery Call →</a>\n\n• **Phone:** (503) 974-3571\n• **Email:** michael@renegadehomemtg.com\n• **Office:** West Linn, OR 97068\n• **Hours:** Monday-Friday 8am-6pm, weekends by appointment\n\nOr start your application online anytime:\n<a href='" + SMART_1003 + "' target='_blank' rel='noopener noreferrer'>Start Your Application →</a>\n\nInitial consultations are free, no obligation, and typically take about 20-30 minutes. We'll give you honest answers. No pressure, no hard sell."
     },
     realtor: {
       keywords: ['realtor', 'real estate agent', 'agent referral', 'referral', 'refer a client', 'listing agent'],
@@ -200,7 +201,7 @@
   /* ───────── GREETING / FALLBACK ───────── */
   var GREETING = "Hi there! 👋 I'm the Renegade Home Mortgage assistant. I can help with questions about mortgages, loan programs, the home buying process, and West Linn real estate.\n\nWhat can I help you with today?";
 
-  var FALLBACK = "That's a great question! I want to make sure you get the most accurate answer. For specifics on your situation, I'd recommend reaching out to " + MLO_NAME + " directly. He can give you personalized guidance.\n\n• **Phone:** (503) 974-3571\n• **Email:** michael@renegadehomemtg.com\n\nOr <a href='" + SMART_1003 + "' target='_blank' rel='noopener noreferrer'>start your application online →</a>\n\nIs there something else I can help with?";
+  var FALLBACK = "That's a great question! I want to make sure you get the most accurate answer. For specifics on your situation, I'd recommend reaching out to " + MLO_NAME + " directly. He can give you personalized guidance.\n\n<a href='" + BOOKING_URL + "' target='_blank' rel='noopener noreferrer'>Schedule a Free Discovery Call →</a>\n\n• **Phone:** (503) 974-3571\n• **Email:** michael@renegadehomemtg.com\n\nOr <a href='" + SMART_1003 + "' target='_blank' rel='noopener noreferrer'>start your application online →</a>\n\nIs there something else I can help with?";
 
   var DISCLAIMER = 'For educational purposes only. Not financial advice. NMLS# ' + NMLS + '.';
 
