@@ -212,11 +212,22 @@
       submitBtn.disabled = true;
       errorEl.style.display = 'none';
 
+      var turnstileInput = document.querySelector('[name="cf-turnstile-response"]');
+      var turnstileToken = turnstileInput ? turnstileInput.value : '';
+      if (!turnstileToken) {
+        errorEl.style.display = 'block';
+        textEl.style.display = 'inline';
+        loadingEl.style.display = 'none';
+        submitBtn.disabled = false;
+        return;
+      }
+
       var payload = {
         first_name: document.getElementById('app-first-name').value.trim(),
         last_name: document.getElementById('app-last-name').value.trim(),
         email: document.getElementById('app-email').value.trim(),
-        phone: document.getElementById('app-phone').value.trim().replace(/[^\d+]/g, '')
+        phone: document.getElementById('app-phone').value.trim().replace(/[^\d+]/g, ''),
+        'cf-turnstile-response': turnstileToken
       };
 
       fetch('/api/get-app', {
@@ -241,6 +252,7 @@
         textEl.style.display = 'inline';
         loadingEl.style.display = 'none';
         submitBtn.disabled = false;
+        if (typeof turnstile !== 'undefined') turnstile.reset();
       });
     });
   }

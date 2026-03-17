@@ -7,6 +7,7 @@ import json
 import uuid
 import urllib.request
 import urllib.error
+import urllib.parse
 from http.server import BaseHTTPRequestHandler
 
 # ── Config ──────────────────────────────────────────────────
@@ -16,6 +17,8 @@ PAM_COMPANY_ID = 1997
 LO_EMAIL = "michael@renegadehomemtg.com"
 NTFY_TOPIC = "renegade-mortgage-chat-alerts"
 NOTIFY_EMAIL = "michael@renegadehomemtg.com"
+TURNSTILE_SECRET = "0x4AAAAAACsZFE-0n9zPwxCoxQSoFYkBiCI"
+TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 
 
 def send_ntfy_push(message, page="get-app"):
@@ -51,6 +54,45 @@ class handler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length", 0))
         body = json.loads(self.rfile.read(length)) if length > 0 else {}
 
+        # ── Turnstile verification ──────────────────────────
+        turnstile_token = (body.get("cf-turnstile-response") or "").strip()
+        if not turnstile_token:
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "success": False,
+                "message": "Human verification failed. Please refresh and try again."
+            }).encode())
+            return
+
+        try:
+            verify_data = urllib.parse.urlencode({
+                "secret": TURNSTILE_SECRET,
+                "response": turnstile_token,
+            }).encode("utf-8")
+            verify_req = urllib.request.Request(
+                TURNSTILE_VERIFY_URL,
+                data=verify_data,
+                method="POST",
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+            with urllib.request.urlopen(verify_req, timeout=10) as vresp:
+                verify_result = json.loads(vresp.read().decode())
+                if not verify_result.get("success"):
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "success": False,
+                        "message": "Human verification failed. Please refresh and try again."
+                    }).encode())
+                    return
+        except Exception:
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "success": False,
+                "message": "Verification service unavailable. Please try again."
+            }).encode())
+            return
+
+        # ── Parse form fields ─────────────────────────────────
         first_name = (body.get("first_name") or "").strip()
         last_name = (body.get("last_name") or "").strip()
         email = (body.get("email") or "").strip()
