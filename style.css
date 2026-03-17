@@ -795,6 +795,9 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--space-4);
+  /* Stretch border full-width beyond container */
+  margin-inline: calc(-1 * var(--space-6));
+  padding-inline: var(--space-6);
 }
 
 .footer__bottom p,
@@ -817,6 +820,14 @@
   margin-top: var(--space-4);
   line-height: 1.7;
   max-width: 100%;
+  /* Stretch full-width beyond container */
+  margin-inline: calc(-1 * var(--space-6));
+  padding-inline: var(--space-6);
+}
+
+.footer__powered {
+  margin-inline: calc(-1 * var(--space-6));
+  padding-inline: var(--space-6);
 }
 
 /* ============================================================
