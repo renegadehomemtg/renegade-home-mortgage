@@ -822,7 +822,8 @@
   width: 100%;
 }
 
-.footer__legal p {
+.footer__legal p,
+.footer__powered p {
   max-width: none;
 }
 
