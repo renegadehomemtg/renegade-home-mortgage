@@ -4,7 +4,9 @@
     { "source": "/api/get-app", "destination": "/api/get-app" },
     { "source": "/api/chat-notify", "destination": "/api/chat-notify" },
     { "source": "/api/referral", "destination": "/api/referral" },
-    { "source": "/api/health", "destination": "/api/health" }
+    { "source": "/api/health", "destination": "/api/health" },
+    { "source": "/api/availability", "destination": "/api/availability" },
+    { "source": "/api/book", "destination": "/api/book" }
   ],
   "headers": [
     {
