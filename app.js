@@ -243,7 +243,7 @@
           // Google Ads conversion tracking
           if (typeof gtag === 'function') {
             gtag('event', 'conversion', {
-              'send_to': 'AW-1883763129/get_app_lead',
+              'send_to': 'AW-18025235354/get_app_lead',
               'event_callback': function() {}
             });
           }
