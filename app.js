@@ -240,6 +240,13 @@
         if (data.success) {
           getAppForm.style.display = 'none';
           successEl.style.display = 'block';
+          // Google Ads conversion tracking
+          if (typeof gtag === 'function') {
+            gtag('event', 'conversion', {
+              'send_to': 'AW-1883763129/get_app_lead',
+              'event_callback': function() {}
+            });
+          }
         } else {
           errorEl.style.display = 'block';
           textEl.style.display = 'inline';
