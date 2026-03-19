@@ -12,7 +12,10 @@ from googleapiclient.discovery import build
 
 # ── Config ──────────────────────────────────────────────────────────
 CALENDAR_ID = "michael@renegadehomemtg.com"
-SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
+SCOPES = [
+    "https://www.googleapis.com/auth/calendar.events",
+    "https://www.googleapis.com/auth/calendar.readonly",
+]
 TIMEZONE = "America/Los_Angeles"
 SLOT_MINUTES = 30
 LOOKAHEAD_DAYS = 14
@@ -30,15 +33,18 @@ BUSINESS_HOURS = {
 
 
 def get_credentials():
-    """Build credentials from environment variable or file."""
+    """Build credentials with domain-wide delegation to access Michael's calendar."""
     creds_json = os.environ.get("GOOGLE_CALENDAR_CREDENTIALS")
     if creds_json:
         info = json.loads(creds_json)
-        return service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
-    # Fallback to file (local dev)
-    return service_account.Credentials.from_service_account_file(
-        "infra-jet-490506-m6-a60cefbe5fdb.json", scopes=SCOPES
-    )
+        creds = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
+    else:
+        # Fallback to file (local dev)
+        creds = service_account.Credentials.from_service_account_file(
+            "infra-jet-490506-m6-a60cefbe5fdb.json", scopes=SCOPES
+        )
+    # Impersonate Michael's calendar via domain-wide delegation
+    return creds.with_subject(CALENDAR_ID)
 
 
 def get_busy_times(service, start_utc, end_utc):
