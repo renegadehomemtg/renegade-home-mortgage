@@ -9,7 +9,7 @@ from http.server import BaseHTTPRequestHandler
 
 # ── Config ──────────────────────────────────────────────────
 PAM_EXPORT_URL = "https://api.nextgenpam.com/Feed/Receive?feedName=Export"
-PAM_API_KEY = "d40509a5-7fb8-476d-a99b-86777bca1111"
+PAM_API_KEY = "82635630-cb6d-45b1-8c7b-377ae235a677"
 PAM_COMPANY_ID = 1997
 PAM_OFFICER_ID = 47
 PORTAL_URL = f"https://manage.preapprovemeapp.com/Portal/{PAM_COMPANY_ID}/{PAM_OFFICER_ID}/Landing"
