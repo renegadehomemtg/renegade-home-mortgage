@@ -192,4 +192,4 @@ class handler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "application/json")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self.wfile.write(json.dumps({"error": "Could not retrieve availability. Please try again."}).encode())

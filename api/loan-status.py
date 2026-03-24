@@ -19,6 +19,19 @@ PORTAL_URL = f"https://manage.preapprovemeapp.com/Portal/{PAM_COMPANY_ID}/{PAM_O
 TURNSTILE_SECRET = "0x4AAAAAACsZFE-0n9zPwxCoxQSoFYkBiCI"
 TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 
+ALLOWED_ORIGINS = {
+    "https://renegadehomemtg.com",
+    "https://www.renegadehomemtg.com",
+}
+
+
+def get_cors_origin(headers):
+    """Return the Origin header only if it matches an allowed domain."""
+    origin = (headers.get("Origin") or "").strip()
+    if origin in ALLOWED_ORIGINS:
+        return origin
+    return None
+
 STATUS_MAP = {
     1: "Outstanding",
     2: "Received",
@@ -118,10 +131,13 @@ def send_json(handler, data):
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
-        # CORS headers
+        # CORS headers (restricted to renegadehomemtg.com)
+        cors_origin = get_cors_origin(self.headers)
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        if cors_origin:
+            self.send_header("Access-Control-Allow-Origin", cors_origin)
+            self.send_header("Vary", "Origin")
         self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
 
@@ -252,8 +268,11 @@ class handler(BaseHTTPRequestHandler):
         send_json(self, {"found": True, "loan": safe})
 
     def do_OPTIONS(self):
+        cors_origin = get_cors_origin(self.headers)
         self.send_response(200)
-        self.send_header("Access-Control-Allow-Origin", "*")
+        if cors_origin:
+            self.send_header("Access-Control-Allow-Origin", cors_origin)
+            self.send_header("Vary", "Origin")
         self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()

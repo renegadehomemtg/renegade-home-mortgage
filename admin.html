@@ -676,7 +676,13 @@
   /* ---- Constants ---- */
   var STORAGE_KEY = 'renegade_chat_logs';
   var SESSION_KEY = 'renegade_admin_auth';
-  var PASSWORD    = 'renegade2026';
+  var PASSWORD_HASH = 'c7b24fca078a45477d7871a2c7e37450c483d348164da07aa10cdc7d5369e586';
+
+  async function hashPassword(pw) {
+    var data = new TextEncoder().encode(pw);
+    var buf  = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(buf)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
 
   /* ---- Storage abstraction (in-memory fallback) ---- */
   var _mem = {};
@@ -1031,13 +1037,15 @@
     loginForm.addEventListener('submit', function (e) {
       e.preventDefault();
       var entered = passwordInput.value;
-      if (entered === PASSWORD) {
-        loginError.textContent = '';
-        login();
-      } else {
-        loginError.textContent = 'Incorrect password. Please try again.';
-        passwordInput.select();
-      }
+      hashPassword(entered).then(function (h) {
+        if (h === PASSWORD_HASH) {
+          loginError.textContent = '';
+          login();
+        } else {
+          loginError.textContent = 'Incorrect password. Please try again.';
+          passwordInput.select();
+        }
+      });
     });
 
     /* Logout */

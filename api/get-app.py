@@ -180,21 +180,18 @@ class handler(BaseHTTPRequestHandler):
                     }).encode())
                     return
 
-        except urllib.error.HTTPError as e:
-            error_body = e.read().decode() if e.fp else str(e)
+        except urllib.error.HTTPError:
             self.end_headers()
             self.wfile.write(json.dumps({
                 "success": False,
-                "message": "Could not create loan. Please try again.",
-                "error": error_body
+                "message": "Could not create loan. Please try again."
             }).encode())
             return
-        except Exception as e:
+        except Exception:
             self.end_headers()
             self.wfile.write(json.dumps({
                 "success": False,
-                "message": "Something went wrong. Please try again.",
-                "error": str(e)
+                "message": "Something went wrong. Please try again."
             }).encode())
             return
 
