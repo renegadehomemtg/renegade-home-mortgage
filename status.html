@@ -39,6 +39,7 @@
 
 <link rel="stylesheet" href="./base.css">
 <link rel="stylesheet" href="./style.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <!-- JSON-LD Structured Data -->
 <script type="application/ld+json">
@@ -834,6 +835,8 @@
           <p id="phone-hint" style="font-size: var(--text-xs); color: var(--color-text-faint); margin-top: var(--space-2);">The phone number on file with your loan application.</p>
         </div>
 
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAACsZFJXEgMZbkz9I" data-theme="dark" style="margin-bottom: var(--space-4);"></div>
+
         <button type="submit" class="btn btn--primary btn--lg" id="lookup-btn" style="width: 100%;">
           Check Loan Status
         </button>
@@ -1358,7 +1361,7 @@
   }
 
   // ── Main fetch via server proxy ─────────────────────────────────────────────
-  function lookupLoan(email, phoneLast4) {
+  function lookupLoan(email, phoneLast4, turnstileToken) {
     clearMessages();
     setLoading(true);
     hideAllResults();
@@ -1366,7 +1369,7 @@
     fetch('/api/loan-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, phone_last4: phoneLast4 })
+      body: JSON.stringify({ email: email, phone_last4: phoneLast4, 'cf-turnstile-response': turnstileToken })
     })
     .then(function (response) {
       if (response.status === 429) {
@@ -1394,10 +1397,12 @@
         }
         noLoanSection.style.display = 'block';
         noLoanSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (typeof turnstile !== 'undefined') turnstile.reset();
         return;
       }
 
       populateResults(data.loan);
+      if (typeof turnstile !== 'undefined') turnstile.reset();
     })
     .catch(function (err) {
       setLoading(false);
@@ -1410,6 +1415,7 @@
         userMsg = err.message || 'We weren\'t able to retrieve your loan status right now. Please try again in a moment, or contact us directly at michael@renegadehomemtg.com.';
       }
       showError(userMsg);
+      if (typeof turnstile !== 'undefined') turnstile.reset();
     });
   }
 
@@ -1439,7 +1445,14 @@
       return;
     }
 
-    lookupLoan(email, phone4);
+    var turnstileInput = document.querySelector('#status-lookup-form [name="cf-turnstile-response"]');
+    var turnstileToken = turnstileInput ? turnstileInput.value : '';
+    if (!turnstileToken) {
+      showError('Please complete the human verification check.');
+      return;
+    }
+
+    lookupLoan(email, phone4, turnstileToken);
   });
 
   // ── "Try Again" button ───────────────────────────────────────────────────────

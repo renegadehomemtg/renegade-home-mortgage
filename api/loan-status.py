@@ -1,18 +1,23 @@
 """
 Vercel Serverless Function: /api/loan-status
-Proxies loan status lookups to PAM API with phone verification.
+Proxies loan status lookups to PAM API with phone verification,
+Cloudflare Turnstile CAPTCHA, and per-email rate limiting.
 """
 import json
 import time
 import urllib.request
+import urllib.parse
 from http.server import BaseHTTPRequestHandler
 
-# ── Config ──────────────────────────────────────────────────
+# -- Config --
 PAM_EXPORT_URL = "https://api.nextgenpam.com/Feed/Receive?feedName=Export"
 PAM_API_KEY = "82635630-cb6d-45b1-8c7b-377ae235a677"
 PAM_COMPANY_ID = 1997
 PAM_OFFICER_ID = 93102
 PORTAL_URL = f"https://manage.preapprovemeapp.com/Portal/{PAM_COMPANY_ID}/{PAM_OFFICER_ID}/Landing"
+
+TURNSTILE_SECRET = "0x4AAAAAACsZFE-0n9zPwxCoxQSoFYkBiCI"
+TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 
 STATUS_MAP = {
     1: "Outstanding",
@@ -22,29 +27,93 @@ STATUS_MAP = {
     5: "Cleared",
 }
 
-# Simple in-memory rate limit (resets on cold start, which is fine for serverless)
-rate_cache = {}
-RATE_LIMIT = 10
-RATE_WINDOW = 300
+# -- Rate limiting (in-memory, resets on cold start) --
+# Per-IP: 10 requests per 5 minutes
+ip_rate_cache = {}
+IP_RATE_LIMIT = 10
+IP_RATE_WINDOW = 300
+
+# Per-email: 5 failed attempts per hour (brute-force protection)
+email_fail_cache = {}
+EMAIL_FAIL_LIMIT = 5
+EMAIL_FAIL_WINDOW = 3600
 
 
-def check_rate(ip):
+def check_ip_rate(ip):
     now = time.time()
-    if ip in rate_cache:
-        count, start = rate_cache[ip]
-        if now - start > RATE_WINDOW:
-            rate_cache[ip] = (1, now)
+    if ip in ip_rate_cache:
+        count, start = ip_rate_cache[ip]
+        if now - start > IP_RATE_WINDOW:
+            ip_rate_cache[ip] = (1, now)
             return True
-        if count >= RATE_LIMIT:
+        if count >= IP_RATE_LIMIT:
             return False
-        rate_cache[ip] = (count + 1, start)
+        ip_rate_cache[ip] = (count + 1, start)
         return True
-    rate_cache[ip] = (1, now)
+    ip_rate_cache[ip] = (1, now)
     return True
+
+
+def check_email_rate(email):
+    """Check if an email has exceeded the failed attempt limit."""
+    now = time.time()
+    if email in email_fail_cache:
+        count, start = email_fail_cache[email]
+        if now - start > EMAIL_FAIL_WINDOW:
+            # Window expired, reset
+            email_fail_cache[email] = (0, now)
+            return True
+        if count >= EMAIL_FAIL_LIMIT:
+            return False
+    return True
+
+
+def record_email_failure(email):
+    """Record a failed lookup attempt for an email."""
+    now = time.time()
+    if email in email_fail_cache:
+        count, start = email_fail_cache[email]
+        if now - start > EMAIL_FAIL_WINDOW:
+            email_fail_cache[email] = (1, now)
+        else:
+            email_fail_cache[email] = (count + 1, start)
+    else:
+        email_fail_cache[email] = (1, now)
+
+
+def clear_email_failures(email):
+    """Clear failure count on successful verification."""
+    if email in email_fail_cache:
+        del email_fail_cache[email]
+
+
+def verify_turnstile(token):
+    """Verify a Cloudflare Turnstile token. Returns True if valid."""
+    try:
+        verify_data = urllib.parse.urlencode({
+            "secret": TURNSTILE_SECRET,
+            "response": token,
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            TURNSTILE_VERIFY_URL,
+            data=verify_data,
+            method="POST",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read().decode())
+            return result.get("success", False)
+    except Exception:
+        return False
 
 
 def extract_digits(s):
     return "".join(c for c in (s or "") if c.isdigit())
+
+
+def send_json(handler, data):
+    handler.end_headers()
+    handler.wfile.write(json.dumps(data).encode())
 
 
 class handler(BaseHTTPRequestHandler):
@@ -56,11 +125,10 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
 
-        # Rate limit
+        # IP rate limit
         ip = self.headers.get("x-forwarded-for", self.client_address[0] if self.client_address else "unknown")
-        if not check_rate(ip):
-            self.end_headers()
-            self.wfile.write(json.dumps({"found": False, "message": "Too many requests. Please try again later."}).encode())
+        if not check_ip_rate(ip):
+            send_json(self, {"found": False, "message": "Too many requests. Please try again later."})
             return
 
         # Parse body
@@ -71,8 +139,22 @@ class handler(BaseHTTPRequestHandler):
         last4 = (body.get("phone_last4") or "").strip()
 
         if not email or not last4 or len(last4) != 4 or not last4.isdigit():
-            self.end_headers()
-            self.wfile.write(json.dumps({"found": False, "message": "Please provide your email and the last 4 digits of your phone number."}).encode())
+            send_json(self, {"found": False, "message": "Please provide your email and the last 4 digits of your phone number."})
+            return
+
+        # Per-email rate limit (brute-force protection)
+        if not check_email_rate(email):
+            send_json(self, {"found": False, "message": "Too many failed attempts for this email. Please try again in an hour, or contact us directly at michael@renegadehomemtg.com."})
+            return
+
+        # Turnstile verification
+        turnstile_token = (body.get("cf-turnstile-response") or "").strip()
+        if not turnstile_token:
+            send_json(self, {"found": False, "message": "Human verification failed. Please refresh and try again."})
+            return
+
+        if not verify_turnstile(turnstile_token):
+            send_json(self, {"found": False, "message": "Human verification failed. Please refresh and try again."})
             return
 
         # Call PAM Export API
@@ -96,19 +178,18 @@ class handler(BaseHTTPRequestHandler):
             with urllib.request.urlopen(req, timeout=15) as resp:
                 pam_data = json.loads(resp.read().decode())
         except Exception:
-            self.end_headers()
-            self.wfile.write(json.dumps({"found": False, "message": "Could not reach our loan system. Please try again in a moment."}).encode())
+            send_json(self, {"found": False, "message": "Could not reach our loan system. Please try again in a moment."})
             return
 
         # Check PAM response
         if not pam_data.get("Success", True):
             code = pam_data.get("Code", 0)
             if code == 3001:
-                self.end_headers()
-                self.wfile.write(json.dumps({"found": False, "message": "No loan found for that email address."}).encode())
+                record_email_failure(email)
+                send_json(self, {"found": False, "message": "No loan found for that email address."})
                 return
-            self.end_headers()
-            self.wfile.write(json.dumps({"found": False, "message": "Error looking up loan."}).encode())
+            record_email_failure(email)
+            send_json(self, {"found": False, "message": "Error looking up loan."})
             return
 
         # Extract loans
@@ -117,8 +198,8 @@ class handler(BaseHTTPRequestHandler):
             loans = pam_data["Loan"]["Loans"]
 
         if not loans:
-            self.end_headers()
-            self.wfile.write(json.dumps({"found": False, "message": "No loan found for that email address."}).encode())
+            record_email_failure(email)
+            send_json(self, {"found": False, "message": "No loan found for that email address."})
             return
 
         loan = loans[0]
@@ -130,17 +211,20 @@ class handler(BaseHTTPRequestHandler):
                 borrower = apps[0].get("PrimaryBorrower", {})
                 phone = extract_digits(borrower.get("Phone", ""))
                 if len(phone) < 4 or phone[-4:] != last4:
-                    self.end_headers()
-                    self.wfile.write(json.dumps({"found": False, "message": "We couldn't verify your identity. Please check your email and phone number."}).encode())
+                    record_email_failure(email)
+                    send_json(self, {"found": False, "message": "We couldn't verify your identity. Please check your email and phone number."})
                     return
             else:
-                self.end_headers()
-                self.wfile.write(json.dumps({"found": False, "message": "We couldn't verify your identity."}).encode())
+                record_email_failure(email)
+                send_json(self, {"found": False, "message": "We couldn't verify your identity."})
                 return
         except Exception:
-            self.end_headers()
-            self.wfile.write(json.dumps({"found": False, "message": "Verification error."}).encode())
+            record_email_failure(email)
+            send_json(self, {"found": False, "message": "Verification error."})
             return
+
+        # Success - clear failure count
+        clear_email_failures(email)
 
         # Sanitize loan data
         safe = {}
@@ -165,8 +249,7 @@ class handler(BaseHTTPRequestHandler):
 
         safe["PortalURL"] = PORTAL_URL
 
-        self.end_headers()
-        self.wfile.write(json.dumps({"found": True, "loan": safe}).encode())
+        send_json(self, {"found": True, "loan": safe})
 
     def do_OPTIONS(self):
         self.send_response(200)
