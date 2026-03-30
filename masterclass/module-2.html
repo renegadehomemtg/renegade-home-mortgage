@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<!--
+  ██████╗ ███████╗██████╗ ██╗     ███████╗██╗  ██╗██╗████████╗██╗   ██╗
+  ██╔══██╗██╔════╝██╔══██╗██║     ██╔════╝╚██╗██╔╝██║╚══██╔══╝╚██╗ ██╔╝
+  ██████╔╝█████╗  ██████╔╝██║     █████╗   ╚███╔╝ ██║   ██║    ╚████╔╝
+  ██╔═══╝ ██╔══╝  ██╔══██╗██║     ██╔══╝   ██╔██╗ ██║   ██║     ╚██╔╝
+  ██║     ███████╗██║  ██║███████╗███████╗██╔╝ ██╗██║   ██║      ██║
+  ╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝      ╚═╝
+  Perplexity Computer | Built for Renegade Home Mortgage
+-->
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 2: The Anatomy of an All-In-One | Renegade AIO Master Class</title>
+  <meta name="description" content="Learn exactly how an All-In-One mortgage works: the first-lien HELOC structure, the sweep mechanism, daily interest calculation, and the integrated checking account.">
+  <meta name="author" content="Renegade Home Mortgage">
+  <meta name="generator" content="Perplexity Computer">
+  <meta property="og:title" content="Module 2: The Anatomy of an All-In-One | Renegade AIO Master Class">
+  <meta property="og:description" content="A first-lien HELOC meets an integrated checking account. Here is how the mechanism works.">
+  <meta property="og:type" content="article">
+  <meta property="og:see_also" content="https://renegadehomemtg.com/masterclass.html">
+  <link rel="author" href="https://renegadehomemtg.com/about.html" title="Perplexity Computer">
+
+  <!-- Google Ads Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18025235354"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-18025235354');
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link href="https://api.fontshare.com/v2/css?f[]=zodiak@700,600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../base.css">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="./module-shared.css">
+
+  <style>
+    /* Module 2 specific overrides */
+    .sweep-node__sub {
+      font-size: var(--text-xs);
+      color: var(--color-text-faint);
+      margin-top: var(--space-1);
+    }
+    .sweep-visual__title {
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+    .sweep-visual__subtitle {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-6);
+    }
+    .sweep-legend {
+      display: flex;
+      gap: var(--space-6);
+      justify-content: center;
+      margin-top: var(--space-6);
+      flex-wrap: wrap;
+    }
+    .sweep-legend__item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+    .sweep-legend__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .sweep-legend__dot--red { background: var(--brand-red); }
+    .sweep-legend__dot--green { background: #34D399; }
+    .sweep-legend__dot--dim { background: var(--color-text-faint); }
+
+    /* Daily interest explainer */
+    .interest-clock {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-8) 0;
+    }
+    .interest-clock__step {
+      background: var(--color-surface);
+      border: 1px solid var(--color-divider);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      text-align: center;
+    }
+    .interest-clock__icon {
+      font-size: 1.75rem;
+      margin-bottom: var(--space-2);
+      line-height: 1;
+    }
+    .interest-clock__label {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+    .interest-clock__desc {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Reading progress bar -->
+  <div class="mod-progress" aria-hidden="true">
+    <div class="mod-progress__bar" id="mod-progress-bar" style="width:0%"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header__inner">
+        <a href="../index.html" class="header__logo">
+          <img src="../assets/logo-red.jpg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--dark" height="44">
+          <img src="../assets/logo-blue.svg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--light" height="44">
+        </a>
+        <nav class="header__nav">
+          <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../about.html">About</a></li>
+            <li><a href="../programs.html">Loan Programs</a></li>
+            <li><a href="../neighborhoods.html">Neighborhoods</a></li>
+            <li><a href="../blog.html">Blog</a></li>
+            <li><a href="../calculators.html">Calculators</a></li>
+            <li><a href="../status.html">Loan Status</a></li>
+            <li><a href="https://smart1003.preapprovemeapp.com?CompanyID=1997&OfficerID=93102" class="btn btn--primary btn--sm" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li>
+          </ul>
+        </nav>
+        <div class="header__actions">
+          <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav">
+    <ul>
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../about.html">About</a></li>
+      <li><a href="../programs.html">Loan Programs</a></li>
+      <li><a href="../neighborhoods.html">Neighborhoods</a></li>
+      <li><a href="../blog.html">Blog</a></li>
+      <li><a href="../calculators.html">Calculators</a></li>
+      <li><a href="../status.html">Loan Status</a></li>
+      <li><a href="https://smart1003.preapprovemeapp.com?CompanyID=1997&OfficerID=93102" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- Gate Overlay -->
+    <div class="mc-gate-overlay" id="mc-gate-overlay" style="display:none;">
+      <div class="mc-gate-overlay__inner">
+        <div class="mc-gate-overlay__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E63946" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h2>This Content Is Locked</h2>
+        <p>Enroll in the free Interest-Killer Master Class to access all 5 modules. Redirecting you now...</p>
+        <a href="../masterclass.html#enroll" class="btn btn--primary">Enroll Now (Free)</a>
+      </div>
+    </div>
+
+    <!-- Module Header -->
+    <section class="mod-header">
+      <div class="container">
+        <nav class="mod-header__nav" aria-label="Breadcrumb">
+          <a href="../masterclass.html">Master Class</a>
+          <span aria-hidden="true">/</span>
+          <span>Module 2</span>
+        </nav>
+        <div class="mod-header__badge">Module 2 of 5</div>
+        <h1 class="mod-header__title">The Anatomy of an <em>All-In-One</em></h1>
+        <p class="mod-header__subtitle">A first-lien HELOC meets an integrated checking account. Here is how the mechanism works.</p>
+      </div>
+    </section>
+
+    <!-- Module Content -->
+    <article class="mod-content">
+      <div class="container">
+
+        <!-- Section 1: What Is an AIO? -->
+        <section class="mod-section">
+          <h2>What Is an All-In-One Mortgage?</h2>
+          <p>
+            Most homeowners have a mortgage and a separate checking account. The mortgage sits in one institution charging daily interest on a large principal balance. The checking account sits in another, holding your paycheck for a few weeks before most of it flows out to bills. These two accounts are isolated from each other, and that isolation costs you a fortune.
+          </p>
+          <p>
+            The All-In-One mortgage collapses both accounts into a single instrument. It is, at its legal core, a first-lien Home Equity Line of Credit (HELOC) - but structured to function as your primary home loan, not a secondary borrowing tool bolted onto an existing mortgage. Your home secures it. Your income runs through it. And your outstanding principal balance is the same line that charges you interest.
+          </p>
+          <p>
+            Here is the practical result: the moment your paycheck hits the account, it immediately reduces the balance on which interest is being charged. You still spend the money on groceries, utilities, and your car payment - just as you always have. But while that money sits inside the account before you spend it, it is actively suppressing the interest accruing on your home loan. This is not a loophole or a trick. It is a structural feature built into how the product calculates interest each night.
+          </p>
+          <p>
+            You get a debit card. You get a checkbook. To the outside world, the AIO account looks and functions exactly like a checking account. The difference is invisible at the transaction level and enormous at the balance sheet level.
+          </p>
+        </section>
+
+        <!-- Section 2: How the Sweep Works -->
+        <section class="mod-section">
+          <h2>How "The Sweep" Works</h2>
+          <p>
+            The mechanism that drives the AIO's power is called the sweep. The concept is straightforward: instead of depositing your income into a conventional checking account at a bank, you route it directly into the AIO. Every dollar deposited - paychecks, quarterly bonuses, side income, rental payments, tax refunds, gifts - lands directly on the principal balance of your home loan.
+          </p>
+          <p>
+            That immediate deposit reduces your outstanding principal. A lower principal means less interest charged that night. You then pull out what you need for bills and living expenses throughout the month. The money you spend leaves the account. The money you do not spend stays in the account, continuing to suppress your principal balance and attack your debt 24 hours a day, 7 days a week.
+          </p>
+          <p>
+            The surplus - the gap between what you earn and what you spend - is the engine. In a traditional mortgage setup, your surplus accumulates in a savings account and earns a modest return. Meanwhile, your mortgage continues charging you a far higher rate on a large balance. In the AIO, that same surplus is working on the highest-rate debt you own, every single day, without any extra payment or manual action on your part.
+          </p>
+          <p>
+            You do not need to change your spending habits. You do not need to make extra payments. The system captures the value of your natural income surplus automatically, just by being the account where your money lives.
+          </p>
+
+          <!-- Sweep Visual Interactive Diagram -->
+          <div class="sweep-visual" aria-label="The Sweep flow diagram">
+            <p class="sweep-visual__title">The Sweep: Watch Your Money Work</p>
+            <p class="sweep-visual__subtitle">Income enters the AIO, principal drops immediately. Expenses leave. Surplus stays working.</p>
+
+            <div class="sweep-flow" id="sweep-flow">
+              <!-- Node 1: Paycheck -->
+              <div class="sweep-node" id="sn-paycheck" aria-label="Paycheck: $8,000 deposited">
+                <div class="sweep-node__label">Income</div>
+                <div class="sweep-node__value">$8,000</div>
+                <div class="sweep-node__sub">Paycheck deposited</div>
+              </div>
+
+              <div class="sweep-arrow" aria-hidden="true">&#8594;</div>
+
+              <!-- Node 2: AIO Account -->
+              <div class="sweep-node" id="sn-aio" aria-label="AIO Account: principal drops to $492,000">
+                <div class="sweep-node__label">AIO Account</div>
+                <div class="sweep-node__value" id="sn-aio-val">$500,000</div>
+                <div class="sweep-node__sub" id="sn-aio-sub">Principal balance</div>
+              </div>
+
+              <div class="sweep-arrow" aria-hidden="true">&#8594;</div>
+
+              <!-- Node 3: Bills Out -->
+              <div class="sweep-node" id="sn-bills" aria-label="Bills: $5,000 leaves the account">
+                <div class="sweep-node__label">Expenses Out</div>
+                <div class="sweep-node__value">$5,000</div>
+                <div class="sweep-node__sub">Bills &amp; spending</div>
+              </div>
+
+              <div class="sweep-arrow" aria-hidden="true">&#8594;</div>
+
+              <!-- Node 4: Surplus -->
+              <div class="sweep-node" id="sn-surplus" aria-label="Surplus: $3,000 stays attacking principal">
+                <div class="sweep-node__label">Surplus Stays</div>
+                <div class="sweep-node__value">$3,000</div>
+                <div class="sweep-node__sub">Attacking principal</div>
+              </div>
+            </div>
+
+            <div class="sweep-legend">
+              <div class="sweep-legend__item">
+                <div class="sweep-legend__dot sweep-legend__dot--red"></div>
+                <span>Money in motion</span>
+              </div>
+              <div class="sweep-legend__item">
+                <div class="sweep-legend__dot sweep-legend__dot--green"></div>
+                <span>Working against principal</span>
+              </div>
+              <div class="sweep-legend__item">
+                <div class="sweep-legend__dot sweep-legend__dot--dim"></div>
+                <span>Inactive</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3: Daily Interest Calculation -->
+        <section class="mod-section">
+          <h2>Daily Interest: The Detail That Changes Everything</h2>
+          <p>
+            A traditional 30-year fixed mortgage calculates interest once per month based on the outstanding balance at a fixed point in time. Your payment on the 1st covers the interest that accrued during the prior month, and the remainder chips away at principal. Your paycheck from the 15th does nothing to reduce that month's interest - it already accreted.
+          </p>
+          <p>
+            The AIO calculates interest nightly, based on the exact unpaid principal balance at the close of each day. If your balance is $495,000 on Monday night because you deposited a paycheck on Monday morning, you pay interest on $495,000 for that day. Not on $500,000. Not on a monthly average. On the actual number, that night.
+          </p>
+          <p>
+            This daily recalculation is what makes the timing of deposits so valuable. A dollar that enters the account today stops generating interest today - even if you spend that same dollar two weeks from now. The interest savings are locked in for every night that dollar sat in the account.
+          </p>
+
+          <div class="interest-clock" aria-label="How daily interest calculation works step by step">
+            <div class="interest-clock__step">
+              <div class="interest-clock__icon">&#127774;</div>
+              <div class="interest-clock__label">Morning</div>
+              <div class="interest-clock__desc">Paycheck deposits. Principal balance drops immediately.</div>
+            </div>
+            <div class="interest-clock__step">
+              <div class="interest-clock__icon">&#9200;</div>
+              <div class="interest-clock__label">All Day</div>
+              <div class="interest-clock__desc">Interest accrues on the reduced balance throughout the day.</div>
+            </div>
+            <div class="interest-clock__step">
+              <div class="interest-clock__icon">&#127769;</div>
+              <div class="interest-clock__label">Midnight</div>
+              <div class="interest-clock__desc">Interest is calculated and posted on that day's exact balance.</div>
+            </div>
+            <div class="interest-clock__step">
+              <div class="interest-clock__icon">&#128197;</div>
+              <div class="interest-clock__label">Month End</div>
+              <div class="interest-clock__desc">Total interest due is the sum of each night's micro-calculation.</div>
+            </div>
+          </div>
+
+          <p>
+            Multiply this effect across every deposit, every month, for the full life of the loan. The dollars you earned but had not yet spent are continuously reducing the balance on which interest compounds. Over a 30-year horizon, the cumulative difference between nightly calculation on a swept balance versus monthly calculation on a static balance is measured in years off the loan and tens of thousands of dollars in avoided interest.
+          </p>
+        </section>
+
+        <!-- Section 4: The Checking Account Feature -->
+        <section class="mod-section">
+          <h2>The Checking Account: Invisible Infrastructure</h2>
+          <p>
+            One of the first questions people ask is: "Does this require me to change how I pay my bills?" The answer is no. The AIO account is a fully functional checking account. You receive a debit card tied to the account. You receive a checkbook. Your employer deposits your paycheck via direct deposit just as before. You set up auto-pay for your utilities, car payment, streaming subscriptions, and mortgage-equivalent payment from the same account.
+          </p>
+          <p>
+            Nothing about your daily financial life changes in a visible way. The transaction history looks identical to any other checking account. The debit card works at every terminal and ATM. Bill pay works the same way. Online transfers work the same way.
+          </p>
+          <p>
+            What changes is the underlying math. Every time your account balance increases, your home loan principal decreases by that same amount. Every time you make a purchase, the principal rises back up proportionally. The principal balance is, at any moment, exactly equal to your home loan balance net of the idle cash sitting in the account.
+          </p>
+          <p>
+            This means your idle money - money you have earned but not yet spent - is never sitting in a low-yield savings account while your mortgage charges you a higher rate on an independent balance. Your idle money is always in the exact right place: reducing the balance on your most expensive debt.
+          </p>
+
+          <div class="mod-compare" aria-label="Traditional mortgage versus AIO comparison">
+            <div class="mod-compare-col mod-compare-col--bad">
+              <div class="mod-compare-col__header">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                Traditional Setup
+              </div>
+              <ul>
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Mortgage and checking account are separate
+                </li>
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Interest calculated monthly on a static balance
+                </li>
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Idle cash earns very little in savings
+                </li>
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Extra payments require manual action
+                </li>
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Surplus money does zero work between paychecks
+                </li>
+              </ul>
+            </div>
+            <div class="mod-compare-col mod-compare-col--good">
+              <div class="mod-compare-col__header">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+                All-In-One Setup
+              </div>
+              <ul>
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  Single account: mortgage and checking unified
+                </li>
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  Interest calculated nightly on exact daily balance
+                </li>
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  Idle cash reduces the principal balance directly
+                </li>
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  Every deposit is an automatic extra payment
+                </li>
+                <li>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  Surplus works 24/7 without any manual action
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 5: The Key Difference Callout -->
+        <section class="mod-section">
+          <h2>The Math Is Not Close</h2>
+          <p>
+            Let us be specific about what is happening in the two scenarios side by side. Imagine you have a $500,000 mortgage balance and a $3,000 monthly surplus - money you earn but do not spend. Here is what each system does with that surplus:
+          </p>
+
+          <div class="mod-callout" aria-label="Key insight callout">
+            <div class="mod-callout__label">Key Insight</div>
+            <p>In a traditional mortgage, your surplus sits in a savings account earning a fraction of a percent while you pay a substantially higher rate on your mortgage. In an AIO, that same surplus is reducing a balance that charges you daily. The math is not close.</p>
+          </div>
+
+          <p>
+            In the traditional setup, that $3,000 earns a nominal return in your savings account. Meanwhile, your mortgage continues charging you its full rate on the full $500,000 balance - undisturbed, indifferent to the cash sitting idle across town in another account.
+          </p>
+          <p>
+            In the AIO, that $3,000 sits inside the loan itself. Your effective principal balance is $497,000. You pay interest on $497,000. Every night. Until you spend that money. And when the next paycheck arrives, the balance drops further before bills go out again.
+          </p>
+          <p>
+            The difference in interest charged between a $500,000 balance and a $497,000 balance is small on a single day. But that same $3,000 of surplus is present every single day of the month. And next month the cycle repeats, with slightly less principal to begin with. And the month after that. The compounding of this daily difference is what separates AIO borrowers who pay off a 30-year loan in 15 years from those who ride it to the end.
+          </p>
+          <p>
+            We have not even discussed what happens when your surplus is larger - when you receive a bonus, a tax refund, or a rental check. Every one of those events is a principal event in the AIO. None of them are in the traditional setup unless you manually write an extra check to your lender and hope they apply it correctly.
+          </p>
+        </section>
+
+        <!-- Section 6: What the AIO Is Not -->
+        <section class="mod-section">
+          <h2>What the AIO Is Not</h2>
+          <p>
+            Before we go further, let us address three things people sometimes misunderstand about this product.
+          </p>
+          <p>
+            <strong>It is not a gimmick.</strong> The All-In-One is a legitimate, regulated mortgage product issued by licensed lenders. It has a legal first-lien position on your home, the same as any conventional mortgage. It is not a debt consolidation scheme, a refinance trick, or a software product. It is a mortgage structure that has existed for decades in Australia and the United Kingdom under the name "offset mortgage," and has been available in the United States for many years.
+          </p>
+          <p>
+            <strong>It is not for everyone.</strong> The AIO rewards borrowers who have consistent income and positive monthly cash flow. If you regularly spend more than you earn, the sweep mechanism provides no benefit - your principal would climb rather than fall. The product rewards discipline not by requiring it, but by making the natural behavior of depositing income mathematically powerful. We will cover qualification in detail in Module 5.
+          </p>
+          <p>
+            <strong>It is not a fixed-rate mortgage.</strong> The AIO carries a variable interest rate tied to an index. This is an important distinction from a 30-year fixed. Whether the variable structure is favorable for your situation depends on your timeline, your risk tolerance, and how aggressively you intend to deploy the sweep. That conversation is worth having. We will walk through the trade-offs in the modules ahead.
+          </p>
+
+          <div class="mod-callout mod-callout--green" aria-label="Takeaway callout">
+            <div class="mod-callout__label">Module Takeaway</div>
+            <p>The AIO is a first-lien HELOC that doubles as your checking account. Its power comes from nightly interest calculation on a balance that is continuously reduced by your deposited income. Your surplus works automatically, without extra payments or behavioral changes. The checking account is the vehicle. The sweep is the mechanism. The daily math is the advantage.</p>
+          </div>
+        </section>
+
+        <!-- Stats Row -->
+        <section class="mod-section">
+          <div class="mod-stats" aria-label="Key figures">
+            <div class="mod-stat">
+              <div class="mod-stat__value">365</div>
+              <div class="mod-stat__label">Interest calculations per year vs. 12 in a traditional mortgage</div>
+            </div>
+            <div class="mod-stat">
+              <div class="mod-stat__value mod-stat__value--green">1</div>
+              <div class="mod-stat__label">Account replaces both your mortgage and your checking account</div>
+            </div>
+            <div class="mod-stat">
+              <div class="mod-stat__value">24/7</div>
+              <div class="mod-stat__label">Hours per day your idle income is attacking your principal</div>
+            </div>
+            <div class="mod-stat">
+              <div class="mod-stat__value mod-stat__value--green">$0</div>
+              <div class="mod-stat__label">Extra payments required to capture the full benefit of the sweep</div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </article>
+
+    <!-- Module Navigation -->
+    <nav class="mod-nav" aria-label="Module navigation">
+      <div class="container">
+        <div class="mod-nav__inner">
+          <a href="./module-1.html" class="mod-nav__link mod-nav__link--prev">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Module 1: The Mortgage Lie
+          </a>
+          <a href="./module-3.html" class="mod-nav__link mod-nav__link--next">
+            Module 3: Velocity of Money
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <a href="../index.html" class="header__logo">
+            <img src="../assets/logo-red.jpg" alt="Renegade Home Mortgage" class="footer__logo-img" height="36">
+          </a>
+          <p>West Linn's independent mortgage broker.</p>
+        </div>
+        <div class="footer__col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="../about.html">About Us</a></li>
+            <li><a href="../programs.html">Loan Programs</a></li>
+            <li><a href="../neighborhoods.html">Neighborhoods</a></li>
+            <li><a href="../blog.html">Blog</a></li>
+            <li><a href="../contact.html">Contact</a></li>
+            <li><a href="../referral.html">Realtor Referrals</a></li>
+            <li><a href="../status.html">Loan Status</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Programs</h4>
+          <ul>
+            <li><a href="../programs.html#conventional">Conventional</a></li>
+            <li><a href="../programs.html#fha">FHA Loans</a></li>
+            <li><a href="../programs.html#va">VA Loans</a></li>
+            <li><a href="../programs.html#jumbo">Jumbo Loans</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Contact</h4>
+          <ul>
+            <li>(503) 974-3571</li>
+            <li>michael@renegadehomemtg.com</li>
+            <li>West Linn, OR 97068</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__legal">
+        <p>Renegade Home Mortgage NMLS# 1938264. Michael Neef NMLS# 227081. Powered by Edge Home Finance NMLS #891464. Equal Housing Opportunity Lender. All loan programs subject to credit approval. This is not a commitment to lend. The information provided is for educational purposes only and does not constitute financial advice. The All-In-One mortgage is a first-lien HELOC product with a variable interest rate. Rates and terms are subject to change. Not all borrowers will qualify. Licensed in Oregon.</p>
+      </div>
+      <div class="footer__powered" style="text-align:center;padding:var(--space-3) 0;border-top:1px solid rgba(255,255,255,0.08);margin-top:var(--space-4);">
+        <p style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin:0;">Powered by Edge Home Finance NMLS #891464</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../app.js"></script>
+  <script src="./module-gate.js"></script>
+
+  <!-- Reading Progress -->
+  <script>
+    (function() {
+      var bar = document.getElementById('mod-progress-bar');
+      if (!bar) return;
+      function updateProgress() {
+        var scrollTop = window.scrollY || document.documentElement.scrollTop;
+        var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        bar.style.width = Math.min(100, pct).toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+    })();
+  </script>
+
+  <!-- Sweep Animation -->
+  <script>
+    (function() {
+      var nodes = [
+        document.getElementById('sn-paycheck'),
+        document.getElementById('sn-aio'),
+        document.getElementById('sn-bills'),
+        document.getElementById('sn-surplus')
+      ];
+      var aioVal = document.getElementById('sn-aio-val');
+      var aioSub = document.getElementById('sn-aio-sub');
+
+      if (!nodes[0] || !nodes[1] || !nodes[2] || !nodes[3]) return;
+
+      // Step sequence for the animation
+      // Each step: [nodeIndex, addActive, addGreen, aioText, aioSub]
+      var steps = [
+        // Step 0: Reset all
+        { reset: true },
+        // Step 1: Paycheck lights up red (money in motion)
+        { node: 0, active: true, green: false, aioText: '$500,000', aioSub: 'Principal balance' },
+        // Step 2: AIO lights up red (receiving funds, principal drops)
+        { node: 1, active: true, green: false, aioText: '$492,000', aioSub: 'Principal drops!' },
+        // Step 3: AIO turns green (balance is being attacked)
+        { node: 1, active: false, green: true, aioText: '$492,000', aioSub: 'Attacking principal' },
+        // Step 4: Bills node lights up red (money out)
+        { node: 2, active: true, green: false, aioText: '$492,000', aioSub: 'Expenses flow out' },
+        // Step 5: Surplus node turns green (surplus stays working)
+        { node: 3, active: false, green: true, aioText: '$492,000', aioSub: 'Surplus working 24/7' },
+        // Pause before reset
+        { pause: true }
+      ];
+
+      var currentStep = 0;
+      var STEP_DELAY = 900; // ms between steps
+      var PAUSE_DELAY = 2500; // ms before loop restarts
+
+      function clearNodes() {
+        nodes.forEach(function(n) {
+          n.classList.remove('sweep-node--active', 'sweep-node--green');
+        });
+        if (aioVal) aioVal.textContent = '$500,000';
+        if (aioSub) aioSub.textContent = 'Principal balance';
+      }
+
+      function runStep() {
+        var step = steps[currentStep];
+
+        if (step.reset) {
+          clearNodes();
+        } else if (step.pause) {
+          // Pause longer, then reset
+          setTimeout(function() {
+            currentStep = 0;
+            runStep();
+          }, PAUSE_DELAY);
+          return;
+        } else {
+          var n = nodes[step.node];
+          if (step.active) {
+            n.classList.add('sweep-node--active');
+            n.classList.remove('sweep-node--green');
+          }
+          if (step.green) {
+            n.classList.remove('sweep-node--active');
+            n.classList.add('sweep-node--green');
+          }
+          if (step.aioText && aioVal) aioVal.textContent = step.aioText;
+          if (step.aioSub && aioSub) aioSub.textContent = step.aioSub;
+        }
+
+        currentStep = (currentStep + 1) % steps.length;
+        setTimeout(runStep, STEP_DELAY);
+      }
+
+      // Start after a short delay to let the page settle
+      setTimeout(runStep, 800);
+    })();
+  </script>
+
+</body>
+</html>

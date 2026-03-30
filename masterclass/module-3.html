@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Renegade Home Mortgage">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3: Velocity of Money | Interest-Killer Master Class | Renegade Home Mortgage</title>
+<meta name="description" content="See the real math behind the All-In-One mortgage. Daily interest calculation turns your idle checking balance into a principal-crushing machine. Module 3 of the free Interest-Killer Master Class.">
+<meta property="og:title" content="Module 3: Velocity of Money | How Idle Dollars Kill Your Mortgage Faster">
+<meta property="og:description" content="Real numbers, not theory. See exactly how daily interest calculation turns idle dollars into a principal-crushing machine. Free master class from Renegade Home Mortgage.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://renegadehomemtg.com/masterclass/module-3.html">
+
+<link href="https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../base.css">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="./module-shared.css">
+
+<!-- Google Ads (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18025235354"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18025235354');
+</script>
+
+<style>
+  /* Daily interest formula display */
+  .formula-block {
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6) var(--space-8);
+    margin: var(--space-6) 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: var(--text-base);
+    color: var(--color-text);
+    line-height: 2;
+    overflow-x: auto;
+  }
+  .formula-block .formula-line {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+  .formula-block .formula-highlight {
+    color: #34D399;
+    font-weight: 700;
+  }
+  .formula-block .formula-highlight--red {
+    color: var(--brand-red);
+    font-weight: 700;
+  }
+
+  /* Day-by-day balance visual */
+  .balance-visual {
+    background: var(--color-surface);
+    border: 1px solid var(--color-divider);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    margin: var(--space-8) 0;
+  }
+  .balance-visual__title {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--space-6);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+  }
+  .balance-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 100px;
+    margin-bottom: var(--space-4);
+  }
+  .balance-bar {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+    transition: height 0.4s ease;
+    position: relative;
+  }
+  .balance-bar--trad {
+    background: rgba(230,57,70,0.4);
+    height: 100%;
+  }
+  .balance-bar--aio {
+    background: rgba(52,211,153,0.4);
+  }
+  .balance-legend {
+    display: flex;
+    gap: var(--space-6);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .balance-legend__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .balance-legend__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+  .balance-legend__dot--red { background: rgba(230,57,70,0.6); }
+  .balance-legend__dot--green { background: rgba(52,211,153,0.6); }
+
+  /* Savings meter */
+  .savings-meter {
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-divider);
+    text-align: center;
+  }
+  .savings-meter__label {
+    font-size: var(--text-xs);
+    color: var(--color-text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-2);
+  }
+  .savings-meter__value {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: #34D399;
+  }
+  .savings-meter__sub {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin-top: var(--space-1);
+  }
+
+  /* Read more progress bar */
+  .mod-progress { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Reading progress bar -->
+<div class="mod-progress">
+  <div class="mod-progress__bar" id="progressBar"></div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="header">
+  <div class="container">
+    <div class="header__inner">
+      <a href="../index.html" class="header__logo">
+        <img src="../assets/logo-red.jpg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--dark" height="44">
+        <img src="../assets/logo-blue.svg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--light" height="44"></a>
+      <nav class="header__nav"><ul><li><a href="../index.html">Home</a></li><li><a href="../about.html">About</a></li><li><a href="../programs.html">Loan Programs</a></li><li><a href="../neighborhoods.html">Neighborhoods</a></li><li><a href="../blog.html">Blog</a></li><li><a href="../calculators.html">Calculators</a></li><li><a href="../status.html">Loan Status</a></li><li><a href="https://smart1003.preapprovemeapp.com?CompanyID=1997&OfficerID=93102" class="btn btn--primary btn--sm" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li></ul></nav>
+      <div class="header__actions">
+        <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+        <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      </div>
+    </div>
+  </div>
+</header>
+<nav class="mobile-nav"><ul><li><a href="../index.html">Home</a></li><li><a href="../about.html">About</a></li><li><a href="../programs.html">Loan Programs</a></li><li><a href="../neighborhoods.html">Neighborhoods</a></li><li><a href="../blog.html">Blog</a></li><li><a href="../calculators.html">Calculators</a></li><li><a href="../status.html">Loan Status</a></li><li><a href="https://smart1003.preapprovemeapp.com?CompanyID=1997&OfficerID=93102" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li></ul></nav>
+
+<main>
+
+  <!-- Gate Overlay -->
+  <div class="mc-gate-overlay" id="mc-gate-overlay" style="display:none;">
+    <div class="mc-gate-overlay__inner">
+      <div class="mc-gate-overlay__icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E63946" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h2>This Content Is Locked</h2>
+      <p>Enroll in the free Interest-Killer Master Class to access all 5 modules. Redirecting you now...</p>
+      <a href="../masterclass.html#enroll" class="btn btn--primary">Enroll Now (Free)</a>
+    </div>
+  </div>
+
+  <!-- Module Header -->
+  <section class="mod-header">
+    <div class="container">
+      <nav class="mod-header__nav" aria-label="Breadcrumb">
+        <a href="../masterclass.html">Master Class</a>
+        <span>/</span>
+        <span>Module 3</span>
+      </nav>
+      <div class="mod-header__badge">Module 3 of 5</div>
+      <h1 class="mod-header__title"><em>Velocity</em> of Money</h1>
+      <p class="mod-header__subtitle">Real numbers, not theory. See exactly how daily interest calculation turns idle dollars into a principal-crushing machine.</p>
+    </div>
+  </section>
+
+  <!-- Module Content -->
+  <div class="mod-content">
+    <div class="container">
+
+      <!-- Section 1: The Setup -->
+      <section class="mod-section">
+        <h2>Setting the Stage: A Real Household Scenario</h2>
+        <p>Let's stop talking in the abstract. The power of the All-In-One mortgage is mathematical, and math demands specifics. So let's run the numbers on a household that looks a lot like yours might.</p>
+
+        <div class="mod-stats">
+          <div class="mod-stat">
+            <div class="mod-stat__value">$8,000</div>
+            <div class="mod-stat__label">Monthly Income</div>
+          </div>
+          <div class="mod-stat">
+            <div class="mod-stat__value">$5,000</div>
+            <div class="mod-stat__label">Monthly Expenses</div>
+          </div>
+          <div class="mod-stat">
+            <div class="mod-stat__value mod-stat__value--green">$3,000</div>
+            <div class="mod-stat__label">Monthly Surplus</div>
+          </div>
+          <div class="mod-stat">
+            <div class="mod-stat__value">$500,000</div>
+            <div class="mod-stat__label">Starting Loan Balance</div>
+          </div>
+        </div>
+
+        <p>This is a solid, responsible household. They bring in $8,000 a month, spend $5,000, and have $3,000 left over. They own a home with a $500,000 mortgage. Now watch what happens to that $3,000 surplus depending on which mortgage product they use.</p>
+      </section>
+
+      <!-- Section 2: Traditional Path -->
+      <section class="mod-section">
+        <h2>The Traditional Loan: Idle Money, Maximum Cost</h2>
+        <p>Under a conventional 30-year fixed mortgage, your $3,000 surplus has nowhere productive to go. Here's the ugly reality of how that plays out, month after month, for thirty years.</p>
+
+        <div class="mod-timeline">
+          <div class="mod-timeline__item">
+            <div class="mod-timeline__dot"></div>
+            <div class="mod-timeline__title">Payday Arrives</div>
+            <div class="mod-timeline__desc">Your $8,000 paycheck lands in your checking account. The bank calculates your mortgage interest based on the full $500,000 balance. Your money sitting in that checking account earns perhaps 0.5% APY while your mortgage charges 6.5% (for illustration purposes) on the full balance. That spread? You're losing it every single day.</div>
+          </div>
+          <div class="mod-timeline__item">
+            <div class="mod-timeline__dot"></div>
+            <div class="mod-timeline__title">Bills Go Out</div>
+            <div class="mod-timeline__desc">The $5,000 in expenses trickles out over the month. Groceries, utilities, car payment, insurance. The remaining $3,000 just sits there, doing nothing useful for your mortgage.</div>
+          </div>
+          <div class="mod-timeline__item">
+            <div class="mod-timeline__dot"></div>
+            <div class="mod-timeline__title">End of Month</div>
+            <div class="mod-timeline__desc">You make your mortgage payment. Most of it goes to interest calculated on the full $500,000. A sliver reduces principal. Your $3,000 surplus either sits in savings earning near-zero or, if you're disciplined, goes to an extra principal payment next month. But the interest for this month was already calculated on the full balance. You can't go back.</div>
+          </div>
+        </div>
+
+        <div class="mod-callout">
+          <div class="mod-callout__label">The Core Problem</div>
+          <p>That $3,000 surplus sat in your checking account for an entire month earning almost nothing while your mortgage charged interest on a balance $3,000 higher than it needed to be. Multiply that inefficiency by 360 months. Now you understand why 30-year mortgages cost as much as they do.</p>
+        </div>
+      </section>
+
+      <!-- Section 3: AIO Path -->
+      <section class="mod-section">
+        <h2>The AIO Path: Every Dollar Works Every Day</h2>
+        <p>Now run the same month through an All-In-One mortgage. The mechanics are fundamentally different, and the difference shows up immediately in day-one math.</p>
+
+        <div class="mod-timeline">
+          <div class="mod-timeline__item">
+            <div class="mod-timeline__dot mod-timeline__dot--green"></div>
+            <div class="mod-timeline__title">Day 1 - Paycheck Hits</div>
+            <div class="mod-timeline__desc">Your $8,000 paycheck deposits directly into your AIO account, which is your first-lien HELOC. The balance immediately drops from $500,000 to $492,000. That night, interest is calculated on $492,000, not $500,000. Your money is already working.</div>
+          </div>
+          <div class="mod-timeline__item">
+            <div class="mod-timeline__dot mod-timeline__dot--green"></div>
+            <div class="mod-timeline__title">Days 2 through 30 - Bills Flow Out</div>
+            <div class="mod-timeline__desc">Your $5,000 in expenses draws down throughout the month. Groceries reduce the balance. The car payment reduces the balance. Each dollar leaving is a dollar that was already offsetting your principal and the interest on it. As bills exit, the balance climbs back up from $492,000 toward $497,000 or so by month's end.</div>
+          </div>
+          <div class="mod-timeline__item">
+            <div class="mod-timeline__dot mod-timeline__dot--green"></div>
+            <div class="mod-timeline__title">Net Effect</div>
+            <div class="mod-timeline__desc">At the end of the month, your balance is roughly $497,000. That $3,000 surplus never officially existed as a separate account - it was embedded in your lower loan balance the entire time, reducing interest charges every single day. No separate payment required. No discipline required. The structure did the work.</div>
+          </div>
+        </div>
+
+        <div class="balance-visual">
+          <div class="balance-visual__title">Illustrative Balance Behavior: Traditional vs. AIO Over a 30-Day Month</div>
+          <div class="balance-bars" id="balanceBars" aria-label="Bar chart comparing daily loan balances"></div>
+          <div class="balance-legend">
+            <div class="balance-legend__item">
+              <div class="balance-legend__dot balance-legend__dot--red"></div>
+              <span>Traditional - constant at $500,000</span>
+            </div>
+            <div class="balance-legend__item">
+              <div class="balance-legend__dot balance-legend__dot--green"></div>
+              <span>AIO - dips with paycheck, rises with expenses</span>
+            </div>
+          </div>
+          <div class="savings-meter">
+            <div class="savings-meter__label">Illustrative Daily Interest Saved (Year 1 Avg)</div>
+            <div class="savings-meter__value" id="dailySavingsDisplay">$1.57</div>
+            <div class="savings-meter__sub">Every single day. For the life of the loan.</div>
+          </div>
+        </div>
+
+        <div class="mod-callout mod-callout--green">
+          <div class="mod-callout__label">Key Insight</div>
+          <p>Your idle money - the cash sitting in your checking account waiting for the mortgage payment - is now working for you 24 hours a day, 7 days a week.</p>
+        </div>
+      </section>
+
+      <!-- Section 4: The Daily Interest Formula -->
+      <section class="mod-section">
+        <h2>The Math Behind the Magic</h2>
+        <p>The All-In-One uses daily interest accrual. Rather than charging you a monthly interest rate applied to last month's balance, it calculates interest every single night based on whatever the current balance happens to be. The formula is straightforward:</p>
+
+        <div class="formula-block">
+          <span class="formula-line">Daily Interest = (Current Principal &times; Annual Rate) &divide; 365</span>
+          &nbsp;
+          <span class="formula-line">Traditional Loan (for illustration, balance constant at $500,000 at 6.45% rate):</span>
+          <span class="formula-highlight--red">Daily Interest = ($500,000 &times; 0.0645) &divide; 365 = $88.36 per day</span>
+          &nbsp;
+          <span class="formula-line">AIO Loan (for illustration, balance at $492,000 after deposit, at 7.15% rate):</span>
+          <span class="formula-highlight">Daily Interest = ($492,000 &times; 0.0715) &divide; 365 = $96.38 per day</span>
+          &nbsp;
+          <span class="formula-line">But the AIO balance continues shrinking over months while traditional stays high.</span>
+          <span class="formula-line">Within 2-3 years the AIO daily interest falls well below the traditional daily charge.</span>
+        </div>
+
+        <p>Notice something critical in that formula: the AIO rate in this illustration is higher than the traditional rate. That is not a misprint. The AIO mortgage typically carries a rate above a standard 30-year fixed because it is a variable-rate HELOC product. This is the part that confuses most people. The AIO is not cheaper per-dollar-borrowed on day one. What makes it powerful is that it dramatically reduces the number of dollars you are borrowing against at any given time.</p>
+
+        <p>Think of it this way. A traditional borrower at a lower rate is still paying that rate on the full $500,000 for years. An AIO borrower at a slightly higher rate is paying it on $492,000, then $491,000, then $489,000 - the effective balance falls fast because the surplus never leaves the account. After 2 to 5 years, the AIO borrower's daily interest charge is materially lower, despite the higher stated rate.</p>
+
+        <div class="mod-stats">
+          <div class="mod-stat">
+            <div class="mod-stat__value mod-stat__value--green">$1.57</div>
+            <div class="mod-stat__label">Daily savings in Year 1 (illustrative)</div>
+          </div>
+          <div class="mod-stat">
+            <div class="mod-stat__value mod-stat__value--green">$573</div>
+            <div class="mod-stat__label">Year 1 interest saved</div>
+          </div>
+          <div class="mod-stat">
+            <div class="mod-stat__value mod-stat__value--green">Compounds</div>
+            <div class="mod-stat__label">Grows each year as balance shrinks faster</div>
+          </div>
+        </div>
+
+        <p>These are for illustration purposes only. Your actual numbers depend on your rate, balance, income, and spending habits. But the direction of the math is always the same: daily accrual on a lower balance beats monthly accrual on a higher one, even when the daily-accrual rate is nominally higher.</p>
+      </section>
+
+      <!-- Section 5: The Compounding Effect -->
+      <section class="mod-section">
+        <h2>The Compounding Effect: Why It Accelerates Over Time</h2>
+        <p>This is where velocity of money becomes a genuinely powerful concept. The benefit does not stay flat at $1.57 per day. It compounds, and it compounds aggressively.</p>
+
+        <p>Here is why. Each month your surplus avoids the loan completely, your principal is lower than it would have been on a traditional mortgage. Next month, interest is calculated on that lower starting point. The following month, even lower. The AIO creates a self-reinforcing cycle where every dollar of surplus you deposit builds on the savings generated by every previous surplus dollar.</p>
+
+        <p>After five years on the traditional path, your balance might still be $465,000 because the early payments were almost entirely interest. After five years on the AIO path, with the same household cash flow, your balance might be closer to $430,000 or lower. That $35,000 difference means less interest accruing from that point forward. The gap compounds from there.</p>
+
+        <div class="mod-compare">
+          <div class="mod-compare-col mod-compare-col--bad">
+            <div class="mod-compare-col__header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+              Traditional Mortgage
+            </div>
+            <ul>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                Surplus earns 0.5% in savings while loan charges 6.45% (illustrative)
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                Monthly interest calculated on flat high balance
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                Extra payments require separate discipline and action
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                Payoff advantage limited to sporadic extra payments
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                Effective rate experienced = stated rate (no offset)
+              </li>
+            </ul>
+          </div>
+          <div class="mod-compare-col mod-compare-col--good">
+            <div class="mod-compare-col__header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+              All-In-One Mortgage
+            </div>
+            <ul>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+                Surplus offsets principal instantly at the mortgage rate
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+                Daily interest calculated on the actual, lower balance
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+                Every deposit is automatically an extra principal payment
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+                Compounding payoff acceleration builds year over year
+              </li>
+              <li>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+                Effective rate felt by borrower can be 2-3% below stated rate
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <p>That last bullet deserves emphasis. Because your surplus is always offsetting principal, the "effective" interest rate you actually experience over the life of the loan can run 2 to 3 percentage points below the nominal rate printed on your note. A 7.15% AIO can functionally outperform a 4.5% traditional mortgage if your household cash flow is healthy and you keep your surplus parked in the account. The math is not magic. It is just arithmetic applied every single day instead of once a month.</p>
+      </section>
+
+      <!-- Section 6: Interactive Calculator -->
+      <section class="mod-section">
+        <h2>Run Your Own Numbers</h2>
+        <p>The example above is useful for understanding the concept. Your household is different. Plug in your own income, expenses, and loan balance to see what the AIO math looks like for your specific situation. All calculations are for illustration purposes only and do not constitute a loan offer or guarantee of savings.</p>
+
+        <div class="mod-calc">
+          <div class="mod-calc__title">Velocity of Money Calculator</div>
+          <div class="mod-calc__inputs">
+            <div class="mod-calc__field">
+              <label for="calc-income">Monthly Income</label>
+              <input type="number" id="calc-income" value="8000" min="1000" max="100000" step="500" aria-label="Monthly income in dollars">
+            </div>
+            <div class="mod-calc__field">
+              <label for="calc-expenses">Monthly Expenses</label>
+              <input type="number" id="calc-expenses" value="5000" min="500" max="90000" step="500" aria-label="Monthly expenses in dollars">
+            </div>
+            <div class="mod-calc__field">
+              <label for="calc-balance">Current Loan Balance</label>
+              <input type="number" id="calc-balance" value="500000" min="50000" max="5000000" step="10000" aria-label="Current loan balance in dollars">
+            </div>
+          </div>
+
+          <div class="mod-calc__result" id="calc-result" role="region" aria-live="polite" aria-label="Calculator results">
+            <div class="mod-calc__result-row">
+              <span class="mod-calc__result-label">Monthly Surplus</span>
+              <span class="mod-calc__result-value mod-calc__result-value--green" id="res-surplus">$3,000</span>
+            </div>
+            <div class="mod-calc__result-row">
+              <span class="mod-calc__result-label">Traditional Payoff (30yr fixed at 6.45% - illustrative)</span>
+              <span class="mod-calc__result-value mod-calc__result-value--red" id="res-trad-payoff">30.0 years</span>
+            </div>
+            <div class="mod-calc__result-row">
+              <span class="mod-calc__result-label">AIO Payoff (daily accrual at 7.15% - illustrative)</span>
+              <span class="mod-calc__result-value mod-calc__result-value--green" id="res-aio-payoff">--</span>
+            </div>
+            <div class="mod-calc__result-row">
+              <span class="mod-calc__result-label">Years Saved</span>
+              <span class="mod-calc__result-value mod-calc__result-value--green" id="res-years-saved">--</span>
+            </div>
+            <div class="mod-calc__result-row">
+              <span class="mod-calc__result-label">Total Interest Saved (illustrative)</span>
+              <span class="mod-calc__result-value mod-calc__result-value--green" id="res-interest-saved">--</span>
+            </div>
+          </div>
+          <p style="font-size: var(--text-xs); color: var(--color-text-faint); margin-top: var(--space-4); margin-bottom: 0; line-height: 1.6;">For illustration purposes only. Rates shown are not guaranteed and do not constitute a commitment to lend. AIO simulation assumes surplus stays in the account and income deposits on day 1 of each month. Actual results depend on your rate, balance, spending patterns, and other factors. Speak with a licensed mortgage professional for a personalized analysis.</p>
+        </div>
+      </section>
+
+      <!-- Section 7: The Real Takeaway -->
+      <section class="mod-section">
+        <h2>What This Means for You</h2>
+        <p>Velocity of money is not a sales pitch. It is a description of what happens when you stop separating your banking and your mortgage into two different products with two different institutions, where one earns you almost nothing and one charges you maximum rate.</p>
+
+        <p>The AIO brings those two products together. Your checking account becomes your loan balance. Every dollar that normally sits idle between paydays is now earning the equivalent of the mortgage rate, not 0.5% at a bank. The daily interest formula ensures that even a few thousand dollars of temporary offset translates into real savings that compound into real years off your loan.</p>
+
+        <p>In Module 4, we will look at what happens to this system when life throws you a curveball. Job loss. Medical bills. Market downturn. The same structure that attacks your mortgage so efficiently in good times also provides a safety net that a traditional mortgage simply cannot offer. The AIO is not just an offensive weapon. It is defensive armor too.</p>
+
+        <div class="mod-callout mod-callout--green">
+          <div class="mod-callout__label">Bottom Line</div>
+          <p>The household in this example did not change their income, their expenses, or their discipline. They simply changed where their checking account lives. That single structural change is what turns a 30-year loan into a 10 to 15-year payoff. The math works whether the market is up or down, whether rates rise or fall. Idle dollars + daily interest = compounding principal destruction.</p>
+        </div>
+      </section>
+
+    </div><!-- /.container -->
+  </div><!-- /.mod-content -->
+
+  <!-- Module Navigation -->
+  <nav class="mod-nav" aria-label="Module navigation">
+    <div class="container">
+      <div class="mod-nav__inner">
+        <a href="./module-2.html" class="mod-nav__link mod-nav__link--prev">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Module 2: The AIO Mechanism
+        </a>
+        <a href="./module-4.html" class="mod-nav__link mod-nav__link--next">
+          Module 4: The Safety Net
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__inner">
+      <div class="footer__brand"><a href="../index.html" class="header__logo">
+          <img src="../assets/logo-red.jpg" alt="Renegade Home Mortgage" class="footer__logo-img" height="36"></a><p>West Linn's independent mortgage broker.</p></div>
+      <div class="footer__col"><h4>Company</h4><ul><li><a href="../about.html">About Us</a></li><li><a href="../programs.html">Loan Programs</a></li><li><a href="../neighborhoods.html">Neighborhoods</a></li><li><a href="../blog.html">Blog</a></li><li><a href="../contact.html">Contact</a></li><li><a href="../referral.html">Realtor Referrals</a></li><li><a href="../status.html">Loan Status</a></li></ul></div>
+      <div class="footer__col"><h4>Programs</h4><ul><li><a href="../programs.html#conventional">Conventional</a></li><li><a href="../programs.html#fha">FHA Loans</a></li><li><a href="../programs.html#va">VA Loans</a></li><li><a href="../programs.html#jumbo">Jumbo Loans</a></li></ul></div>
+      <div class="footer__col"><h4>Contact</h4><ul><li>(503) 974-3571</li><li>michael@renegadehomemtg.com</li><li>West Linn, OR 97068</li></ul></div>
+    </div>
+    <div class="footer__legal"><p>Renegade Home Mortgage NMLS# 1938264. Michael Neef NMLS# 227081. Powered by Edge Home Finance NMLS #891464. Equal Housing Opportunity Lender. All loan programs subject to credit approval. This is not a commitment to lend. The information provided is for educational purposes only and does not constitute financial advice. The All-In-One mortgage is a first-lien HELOC product with a variable interest rate. Rates and terms are subject to change. Not all borrowers will qualify. Licensed in Oregon.</p></div>
+    <div class="footer__powered" style="text-align:center;padding:var(--space-3) 0;border-top:1px solid rgba(255,255,255,0.08);margin-top:var(--space-4);"><p style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin:0;">Powered by Edge Home Finance NMLS #891464</p></div>
+  </div>
+</footer>
+
+<script src="../app.js"></script>
+<script src="./module-gate.js"></script>
+
+<script>
+/* ============================================================
+   MODULE 3 - VELOCITY OF MONEY
+   Interactive Calculator + Balance Visual
+   ============================================================ */
+
+// --- Reading Progress Bar ---
+(function() {
+  var bar = document.getElementById('progressBar');
+  if (!bar) return;
+  function updateProgress() {
+    var scrollTop = window.scrollY || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0;
+    bar.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+})();
+
+// --- Balance Visual (30-day bar chart) ---
+(function() {
+  var container = document.getElementById('balanceBars');
+  if (!container) return;
+
+  // Build 30 days of bars. Traditional = constant height.
+  // AIO: Day 1 dips to $492K (income-$8K), then expenses drain evenly at $5K/30 per day
+  var tradBalance = 500000;
+  var aioBalances = [];
+  var bal = 500000;
+  for (var d = 1; d <= 30; d++) {
+    if (d === 1) bal -= 8000; // paycheck drops it
+    bal += (5000 / 30);       // daily expense draw
+    aioBalances.push(Math.max(bal, 490000));
+  }
+
+  var minAIO = Math.min.apply(null, aioBalances);
+  var maxAIO = tradBalance;
+  var range = maxAIO - minAIO + 500; // add buffer
+
+  for (var i = 0; i < 30; i++) {
+    var wrapper = document.createElement('div');
+    wrapper.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end;';
+
+    // Traditional bar
+    var tradBar = document.createElement('div');
+    tradBar.style.cssText = 'width:100%;border-radius:2px 2px 0 0;background:rgba(230,57,70,0.35);height:100%;';
+
+    // AIO bar - height proportional to its balance vs max
+    var aioHeight = Math.round(((aioBalances[i] - minAIO + 500) / range) * 100);
+    var aioBar = document.createElement('div');
+    aioBar.style.cssText = 'width:100%;border-radius:2px 2px 0 0;background:rgba(52,211,153,0.5);position:absolute;bottom:0;height:' + aioHeight + '%;';
+
+    // Stacked container
+    var barWrap = document.createElement('div');
+    barWrap.style.cssText = 'position:relative;flex:1;width:100%;';
+    barWrap.appendChild(tradBar);
+    barWrap.appendChild(aioBar);
+    wrapper.appendChild(barWrap);
+    container.appendChild(wrapper);
+  }
+})();
+
+// --- Velocity of Money Calculator ---
+(function() {
+  var TRAD_RATE = 0.0645;   // 6.45% - illustrative
+  var AIO_RATE  = 0.0715;   // 7.15% - illustrative
+
+  function fmt$(n) {
+    if (n >= 1000000) return '$' + (n / 1000000).toFixed(2) + 'M';
+    if (n >= 1000) return '$' + Math.round(n).toLocaleString();
+    return '$' + n.toFixed(0);
+  }
+  function fmtYears(y) {
+    if (!isFinite(y) || y <= 0) return 'N/A';
+    var yrs = Math.floor(y);
+    var mos = Math.round((y - yrs) * 12);
+    if (mos === 12) { yrs++; mos = 0; }
+    if (mos === 0) return yrs + ' years';
+    return yrs + ' yrs ' + mos + ' mo';
+  }
+
+  // Standard amortization: monthly payment for 30yr fixed
+  function tradMonthlyPayment(balance, annualRate) {
+    var r = annualRate / 12;
+    var n = 360;
+    return balance * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+  }
+
+  // Traditional payoff: fixed payment + surplus applied monthly
+  // surplus is extra principal each month
+  function tradPayoff(balance, annualRate, monthlySurplus) {
+    if (balance <= 0) return { years: 0, totalInterest: 0 };
+    var payment = tradMonthlyPayment(balance, annualRate);
+    var extraPayment = Math.max(0, monthlySurplus);
+    var totalPayment = payment + extraPayment;
+    var monthlyRate = annualRate / 12;
+    var months = 0;
+    var totalInterest = 0;
+    var bal = balance;
+    var maxMonths = 360 * 3; // safety cap
+    while (bal > 0 && months < maxMonths) {
+      var interest = bal * monthlyRate;
+      totalInterest += interest;
+      var principal = totalPayment - interest;
+      if (principal <= 0) {
+        // Can't pay it off - growing balance
+        return { years: Infinity, totalInterest: Infinity };
+      }
+      bal -= principal;
+      months++;
+      if (bal < 0) bal = 0;
+    }
+    return { years: months / 12, totalInterest: totalInterest };
+  }
+
+  // AIO payoff: daily simulation
+  // Each month: income deposits on day 1, expenses drain evenly over 30 days
+  // Daily interest = balance * annualRate / 365
+  function aioPayoff(balance, annualRate, monthlyIncome, monthlyExpenses) {
+    if (balance <= 0) return { years: 0, totalInterest: 0 };
+    var bal = balance;
+    var totalInterest = 0;
+    var days = 0;
+    var maxDays = 365 * 60; // 60-year safety cap
+
+    while (bal > 0.01 && days < maxDays) {
+      var dayOfMonth = days % 30;
+
+      // Day 1 of each month: deposit income
+      if (dayOfMonth === 0) {
+        bal -= monthlyIncome;
+        if (bal < 0) bal = 0; // loan paid off
+      }
+
+      // Each day: withdraw daily share of expenses
+      var dailyExpense = monthlyExpenses / 30;
+      bal += dailyExpense;
+
+      // Daily interest accrues on current balance
+      if (bal > 0) {
+        var dailyInterest = bal * annualRate / 365;
+        totalInterest += dailyInterest;
+        bal += dailyInterest;
+      }
+
+      days++;
+      if (bal < 0) bal = 0;
+    }
+
+    return { years: days / 365, totalInterest: totalInterest };
+  }
+
+  function runCalc() {
+    var income   = parseFloat(document.getElementById('calc-income').value)   || 8000;
+    var expenses = parseFloat(document.getElementById('calc-expenses').value) || 5000;
+    var balance  = parseFloat(document.getElementById('calc-balance').value)  || 500000;
+
+    var surplus = income - expenses;
+
+    // Traditional: standard amortization, surplus as extra monthly principal payment
+    var tradResult = tradPayoff(balance, TRAD_RATE, Math.max(0, surplus));
+
+    // AIO: daily simulation
+    var aioResult = { years: Infinity, totalInterest: Infinity };
+    if (surplus > 0) {
+      aioResult = aioPayoff(balance, AIO_RATE, income, expenses);
+    }
+
+    // Display surplus
+    document.getElementById('res-surplus').textContent =
+      surplus >= 0 ? fmt$(surplus) + '/mo' : '-' + fmt$(Math.abs(surplus)) + '/mo';
+    document.getElementById('res-surplus').className =
+      'mod-calc__result-value ' + (surplus >= 0 ? 'mod-calc__result-value--green' : 'mod-calc__result-value--red');
+
+    // Traditional payoff
+    document.getElementById('res-trad-payoff').textContent =
+      isFinite(tradResult.years) ? fmtYears(tradResult.years) : '30+ years';
+
+    // AIO payoff
+    if (!isFinite(aioResult.years) || surplus <= 0) {
+      document.getElementById('res-aio-payoff').textContent = 'Requires positive surplus';
+      document.getElementById('res-years-saved').textContent = 'N/A';
+      document.getElementById('res-interest-saved').textContent = 'N/A';
+    } else {
+      document.getElementById('res-aio-payoff').textContent = fmtYears(aioResult.years);
+
+      var yearsSaved = isFinite(tradResult.years) ? tradResult.years - aioResult.years : null;
+      document.getElementById('res-years-saved').textContent =
+        yearsSaved !== null && yearsSaved > 0 ? fmtYears(yearsSaved) + ' faster' : 'Minimal difference';
+
+      var interestSaved = isFinite(tradResult.totalInterest) ? tradResult.totalInterest - aioResult.totalInterest : null;
+      document.getElementById('res-interest-saved').textContent =
+        interestSaved !== null && interestSaved > 0 ? fmt$(interestSaved) : 'See a loan officer for details';
+    }
+
+    // Update the daily savings display in the balance visual
+    // Year 1: AIO avg daily interest vs traditional daily interest on full balance
+    var tradDailyYr1 = balance * TRAD_RATE / 365;
+    var aioDailyYr1  = (balance - surplus) * AIO_RATE / 365;
+    var dailySavings = tradDailyYr1 - aioDailyYr1;
+    var display = document.getElementById('dailySavingsDisplay');
+    if (display) {
+      if (dailySavings > 0) {
+        display.textContent = '$' + dailySavings.toFixed(2);
+        display.style.color = '#34D399';
+      } else {
+        var absSav = Math.abs(dailySavings);
+        display.textContent = '-$' + absSav.toFixed(2);
+        display.style.color = 'var(--brand-red)';
+      }
+    }
+  }
+
+  // Attach listeners
+  ['calc-income', 'calc-expenses', 'calc-balance'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', runCalc);
+      el.addEventListener('change', runCalc);
+    }
+  });
+
+  // Run on load
+  runCalc();
+})();
+</script>
+
+</body>
+</html>

@@ -183,6 +183,14 @@ class LoanStatusRequest(BaseModel):
     email: str
     phone_last4: str
 
+class MasterClassEnroll(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    phone: str
+    turnstile_token: str = ""
+    source: str = "masterclass"
+
 
 # ── Notification helpers ────────────────────────────────────
 
@@ -378,6 +386,67 @@ async def get_app(data: GetAppRequest):
         return {"success": False, "message": "Could not create loan. Please try again.", "error": error_body}
     except Exception as e:
         return {"success": False, "message": "Something went wrong. Please try again.", "error": str(e)}
+
+
+# ── Master Class Enrollment ────────────────────────────────
+
+TURNSTILE_SECRET = "0x4AAAAAACsZFE-0n9zPwxCoxQSoFYkBiCI"
+
+def verify_turnstile(token: str, ip: str) -> bool:
+    """Verify Cloudflare Turnstile token."""
+    if not token:
+        return False
+    try:
+        payload = json.dumps({
+            "secret": TURNSTILE_SECRET,
+            "response": token,
+            "remoteip": ip
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            data=payload,
+            method="POST",
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read().decode())
+            return result.get("success", False)
+    except Exception:
+        return False
+
+
+def send_lead_email(data: MasterClassEnroll):
+    """Send lead notification via ntfy push to michael@renegadehomemtg.com."""
+    message = (
+        f"New Master Class Enrollment:\n"
+        f"Name: {data.first_name} {data.last_name}\n"
+        f"Email: {data.email}\n"
+        f"Phone: {data.phone}\n"
+        f"Source: {data.source}"
+    )
+    send_ntfy_push(message, "masterclass")
+
+
+@app.post("/api/masterclass-enroll")
+async def masterclass_enroll(data: MasterClassEnroll, request: Request):
+    ip = request.client.host if request.client else "unknown"
+
+    # Rate limit: 5 enrollments per IP per 5 minutes
+    if not check_rate_limit(ip):
+        raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
+
+    # Verify Turnstile
+    if not verify_turnstile(data.turnstile_token, ip):
+        raise HTTPException(status_code=403, detail="Security verification failed. Please try again.")
+
+    # Validate fields
+    if not data.first_name or not data.last_name or not data.email or not data.phone:
+        raise HTTPException(status_code=400, detail="All fields are required.")
+
+    # Send notification
+    send_lead_email(data)
+
+    return {"success": True, "message": "Enrollment successful. Welcome to the Master Class."}
 
 
 @app.get("/api/health")
