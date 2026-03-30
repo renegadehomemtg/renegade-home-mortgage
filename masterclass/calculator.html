@@ -892,51 +892,47 @@
     };
   }
 
-  // --- AI Question Handler ---
-  function handleAIQuestion(question) {
+  // --- AI Question Handler (calls backend LLM) ---
+  async function handleAIQuestion(question, responseDiv, askBtn) {
     var s = window._calcState;
-    if (!s) return 'Please enter your numbers above first.';
+    
+    // Show loading state
+    responseDiv.style.display = 'block';
+    responseDiv.innerHTML = '<span style="color:var(--color-text-faint);">Thinking...</span>';
+    askBtn.disabled = true;
+    askBtn.textContent = '...';
 
-    var q = question.toLowerCase();
-    var response = '';
-
-    if (q.indexOf('bonus') > -1 || q.indexOf('5,000') > -1 || q.indexOf('5000') > -1) {
-      var bonusAIO = calcAIO(s.balance, s.aioRate, s.income + 5000/12, s.expenses);
-      var bonusSaved = (s.aio.months - bonusAIO.months) / 12;
-      response = 'A one-time $5,000 bonus deposited into your AIO would reduce your principal by $5,000 immediately. ' +
-        'If this became a recurring annual bonus, it would shave approximately ' + bonusSaved.toFixed(1) + 
-        ' additional years off your payoff time and save you an estimated ' + 
-        fmt(s.aio.totalInterest - bonusAIO.totalInterest) + ' in additional interest. ' +
-        'Even a single deposit helps because interest is calculated daily on the lower balance.';
-    } else if (q.indexOf('expense') > -1 || q.indexOf('500') > -1) {
-      var moreExp = calcAIO(s.balance, s.aioRate, s.income, s.expenses + 500);
-      var diff = (moreExp.months - s.aio.months) / 12;
-      response = 'If your monthly expenses increase by $500, your surplus drops from ' + fmt(s.surplus) + ' to ' + 
-        fmt(s.surplus - 500) + '. This would extend your AIO payoff by approximately ' + diff.toFixed(1) + 
-        ' years and cost you an additional ' + fmt(moreExp.totalInterest - s.aio.totalInterest) + 
-        ' in interest. The AIO is sensitive to cash flow, which is why spending discipline is key.';
-    } else if (q.indexOf('rental') > -1 || q.indexOf('2,000') > -1 || q.indexOf('2000') > -1) {
-      var rental = calcAIO(s.balance, s.aioRate, s.income + 2000, s.expenses);
-      var rentalSaved = (s.aio.months - rental.months) / 12;
-      response = 'Adding $2,000/month in rental income is a game-changer. Your surplus jumps from ' + fmt(s.surplus) + 
-        ' to ' + fmt(s.surplus + 2000) + '. This would shave approximately ' + rentalSaved.toFixed(1) + 
-        ' years off your payoff and save ' + fmt(s.aio.totalInterest - rental.totalInterest) + 
-        ' in interest. Every additional dollar of income deposited into the AIO attacks the principal daily.';
-    } else if (q.indexOf('rate') > -1 || q.indexOf('drop') > -1) {
-      var lowerAIO = calcAIO(s.balance, s.aioRate - 0.01, s.income, s.expenses);
-      var rateDiff = (s.aio.months - lowerAIO.months) / 12;
-      response = 'If the AIO rate drops by 1%, your daily interest charge decreases and your principal shrinks faster. ' +
-        'This would reduce your payoff by approximately ' + rateDiff.toFixed(1) + ' years and save ' + 
-        fmt(s.aio.totalInterest - lowerAIO.totalInterest) + ' in total interest. ' +
-        'Since the AIO has a variable rate, rate decreases benefit you immediately, unlike a fixed mortgage where you would need to refinance.';
-    } else {
-      response = 'Based on your numbers: with a ' + fmt(s.surplus) + '/month surplus, the AIO pays off in ' +
-        fmtYears(s.aio.months) + ' versus ' + fmtYears(s.trad.months) + ' for the traditional loan. ' +
-        'That saves you ' + fmt(s.intSaved) + ' in interest. ' +
-        'Try adjusting the inputs above to explore different scenarios, or ask about bonuses, expense changes, or rate movements.';
+    // Build calc state to send
+    var calcPayload = {};
+    if (s) {
+      calcPayload = {
+        income: s.income,
+        expenses: s.expenses,
+        balance: s.balance,
+        surplus: s.surplus,
+        fixedRate: s.fixedRate,
+        aioRate: s.aioRate,
+        trad: { months: s.trad.months, totalInterest: s.trad.totalInterest },
+        aio: { months: s.aio.months, totalInterest: s.aio.totalInterest },
+        yearsSaved: s.yearsSaved,
+        intSaved: s.intSaved
+      };
     }
 
-    return response;
+    try {
+      var res = await fetch('/api/masterclass-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: question, calc_state: calcPayload })
+      });
+      var data = await res.json();
+      responseDiv.textContent = data.answer || 'No response received. Please try again.';
+    } catch (err) {
+      responseDiv.textContent = 'Could not reach the AI right now. Please try again or call us at (503) 974-3571.';
+    }
+
+    askBtn.disabled = false;
+    askBtn.textContent = 'Ask';
   }
 
   // --- Init ---
@@ -957,8 +953,7 @@
       askBtn.addEventListener('click', function() {
         var q = qInput.value.trim();
         if (!q) return;
-        responseDiv.style.display = 'block';
-        responseDiv.textContent = handleAIQuestion(q);
+        handleAIQuestion(q, responseDiv, askBtn);
       });
       qInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') askBtn.click();
