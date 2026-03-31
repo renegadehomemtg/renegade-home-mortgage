@@ -481,12 +481,12 @@
           <div class="calc-input__hint">Gross household income deposited monthly</div>
         </div>
         <div class="calc-input">
-          <label for="calc-expenses">Monthly Expenses</label>
+          <label for="calc-expenses">Monthly Living Expenses (not including mortgage)</label>
           <div class="calc-input__wrap">
             <span class="calc-input__prefix">$</span>
             <input type="text" id="calc-expenses" value="5,000" inputmode="numeric">
           </div>
-          <div class="calc-input__hint">Total monthly outflows (bills, groceries, etc.)</div>
+          <div class="calc-input__hint">Living costs only: food, utilities, car, insurance, etc. Do NOT include mortgage payment.</div>
         </div>
         <div class="calc-input">
           <label for="calc-balance">Current Loan Balance</label>
@@ -689,48 +689,48 @@
   }
 
   // --- AIO Daily Simulation ---
+  // AIO simulation: expenses = living costs WITHOUT mortgage.
+  // Each month: new_balance = balance - surplus + monthly_interest
+  // Interest accrues on the balance, surplus (income - living expenses) reduces principal.
   function calcAIO(balance, annualRate, monthlyIncome, monthlyExpenses) {
-    var dailyRate = annualRate / 365;
     var totalInterest = 0;
     var totalMonths = 0;
     var bal = balance;
     var history = [bal];
     var maxMonths = 600;
-    var dailyExpense = monthlyExpenses / 30;
+    var surplus = monthlyIncome - monthlyExpenses;
     var paidOff = false;
 
+    if (surplus <= 0) {
+      return { months: maxMonths, totalInterest: 0, effectiveMonthly: 0, totalPaid: 0, balanceHistory: [balance, balance] };
+    }
+
+    var prevBal = balance;
     for (var m = 0; m < maxMonths; m++) {
-      // Day 1: deposit full paycheck
-      bal -= monthlyIncome;
+      // Monthly interest on current balance
+      var monthInt = bal * annualRate / 12;
+      totalInterest += monthInt;
+
+      // New balance = old balance - surplus + interest
+      bal = bal - surplus + monthInt;
+
+      totalMonths++;
+
       if (bal <= 0) {
-        totalMonths++;
+        bal = 0;
         history.push(0);
         paidOff = true;
         break;
       }
 
-      // 30 days: daily spending + daily interest ACCRUAL (capitalized at month end)
-      var prevBal = bal;
-      var monthInt = 0;
-      for (var d = 0; d < 30; d++) {
-        bal += dailyExpense;
-        if (bal > 0) {
-          monthInt += bal * dailyRate;
-        }
-      }
-
-      // End of month: capitalize interest
-      bal += monthInt;
-      totalInterest += monthInt;
-
-      // If balance is growing, surplus cannot cover interest
+      // If balance is growing, surplus cannot overcome interest
       if (totalMonths > 3 && bal >= prevBal) {
         totalMonths = maxMonths;
         history.push(bal);
         break;
       }
+      prevBal = bal;
 
-      totalMonths++;
       if (totalMonths % 12 === 0) {
         history.push(Math.max(0, bal));
       }
