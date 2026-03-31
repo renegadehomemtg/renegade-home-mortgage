@@ -563,7 +563,7 @@
             <div class="calc-result-card__name">AIO First-Lien HELOC</div>
           </div>
         </div>
-        <div class="calc-result-row"><span class="calc-result-row__label">Effective Monthly Cost</span><span class="calc-result-row__value" id="aio-payment">$2,813</span></div>
+        <div class="calc-result-row"><span class="calc-result-row__label">Avg Monthly Interest</span><span class="calc-result-row__value" id="aio-payment">$1,678</span></div>
         <div class="calc-result-row"><span class="calc-result-row__label">Payoff Time</span><span class="calc-result-row__value" style="color: #34D399;" id="aio-payoff">12.7 years</span></div>
         <div class="calc-result-row"><span class="calc-result-row__label">Total Interest Paid</span><span class="calc-result-row__value" style="color: #34D399;" id="aio-interest">$243,419</span></div>
         <div class="calc-result-row"><span class="calc-result-row__label">Total Amount Paid</span><span class="calc-result-row__value" id="aio-total">$743,419</span></div>
@@ -738,7 +738,7 @@
 
     if (!paidOff && totalMonths >= maxMonths) totalMonths = maxMonths;
 
-    var effMonthly = totalMonths > 0 ? (balance + totalInterest) / totalMonths : 0;
+    var effMonthly = totalMonths > 0 ? totalInterest / totalMonths : 0;
 
     return {
       months: totalMonths,
@@ -858,7 +858,7 @@
     document.getElementById('tr-total').textContent = fmt(trad.totalPaid);
 
     // Update AIO card
-    document.getElementById('aio-payment').textContent = fmt(aio.effectiveMonthly);
+    document.getElementById('aio-payment').textContent = fmt(aio.effectiveMonthly) + '/mo';
     document.getElementById('aio-payoff').textContent = fmtYears(aio.months);
     document.getElementById('aio-interest').textContent = fmt(aio.totalInterest);
     document.getElementById('aio-total').textContent = fmt(aio.totalPaid);
