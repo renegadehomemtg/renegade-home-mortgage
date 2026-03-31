@@ -67,692 +67,77 @@
 </script>
 
 <style>
-/* ── Booking Component ──────────────────────────────────────────── */
-.booking-page {
-  padding-block: var(--space-8) var(--space-12);
-}
-
-.booking-component {
-  max-width: 56rem;
-  margin: 0 auto;
-}
-
-/* ── Steps Indicator ─────────────────────────────────────────────── */
-.booking-steps {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-8);
-}
-
-.booking-step {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--color-text-faint);
-  transition: color 0.2s;
-}
-
-.booking-step.active {
-  color: var(--color-primary);
-  font-weight: 600;
-}
-
-.booking-step.completed {
-  color: var(--color-text-muted);
-}
-
-.booking-step__number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid var(--color-divider);
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-.booking-step.active .booking-step__number {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
-}
-
-.booking-step.completed .booking-step__number {
-  background: var(--color-primary-light);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.booking-step__divider {
-  width: 40px;
-  height: 2px;
-  background: var(--color-divider);
-  border-radius: 1px;
-}
-
-.booking-step__divider.completed {
-  background: var(--color-primary);
-}
-
-/* ── Calendar Strip ──────────────────────────────────────────────── */
-.date-picker {
-  background: var(--color-surface);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5) var(--space-6);
-  margin-bottom: var(--space-5);
-}
-
-.date-picker__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-4);
-}
-
-.date-picker__month {
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.date-picker__nav {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.date-picker__nav button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-divider);
-  color: var(--color-text-muted);
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.date-picker__nav button:hover:not(:disabled) {
-  background: var(--color-surface-2);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-
-.date-picker__nav button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.date-strip {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: var(--space-2);
-}
-
-.date-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: var(--space-3) var(--space-2);
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all 0.15s;
-  background: transparent;
-}
-
-.date-cell:hover:not(.date-cell--disabled):not(.date-cell--selected) {
-  background: var(--color-surface-2);
-  border-color: var(--color-border);
-}
-
-.date-cell--selected {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.date-cell--selected .date-cell__day,
-.date-cell--selected .date-cell__num {
-  color: #fff;
-}
-
-.date-cell--disabled {
-  opacity: 0.25;
-  cursor: not-allowed;
-}
-
-.date-cell--today .date-cell__num {
-  position: relative;
-}
-
-.date-cell--today .date-cell__num::after {
-  content: '';
-  position: absolute;
-  bottom: -3px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--color-primary);
-}
-
-.date-cell--selected.date-cell--today .date-cell__num::after {
-  background: #fff;
-}
-
-.date-cell__day {
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-faint);
-}
-
-.date-cell__num {
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-/* ── Time Slots Grid ─────────────────────────────────────────────── */
-.time-slots {
-  background: var(--color-surface);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5) var(--space-6);
-  margin-bottom: var(--space-5);
-}
-
-.time-slots__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-4);
-}
-
-.time-slots__title {
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.time-slots__tz {
-  font-size: var(--text-sm);
-  color: var(--color-text-faint);
-}
-
-.time-slots__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: var(--space-2);
-}
-
-.time-slot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-3) var(--space-2);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-divider);
-  background: transparent;
-  color: var(--color-text);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.time-slot:hover:not(.time-slot--selected) {
-  background: var(--color-surface-2);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.time-slot--selected {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
-  font-weight: 600;
-}
-
-.time-slots__empty {
+.book-hero {
+  padding: var(--space-16) 0 var(--space-8);
   text-align: center;
-  padding: var(--space-8) var(--space-4);
-  color: var(--color-text-muted);
 }
-
-.time-slots__empty svg {
-  display: inline-block;
-  margin-bottom: var(--space-3);
-  opacity: 0.4;
-}
-
-.time-slots__empty p {
-  margin: 0 auto;
-  max-width: 32ch;
-  line-height: 1.6;
-}
-
-/* ── Booking Form ────────────────────────────────────────────────── */
-.booking-form {
-  background: var(--color-surface);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6);
-}
-
-.booking-form__header {
-  margin-bottom: var(--space-6);
-}
-
-.booking-form__title {
+.book-hero h1 {
   font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: var(--space-2);
-}
-
-.booking-form__selected {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-}
-
-.booking-form__selected svg {
-  flex-shrink: 0;
-}
-
-.form-group {
+  font-size: var(--text-2xl);
+  font-weight: 700;
   margin-bottom: var(--space-4);
 }
-
-.form-group label {
-  display: block;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-text);
-  margin-bottom: var(--space-2);
-}
-
-.form-group label .required {
-  color: var(--color-primary);
-}
-
-.form-input {
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-base);
-  background: var(--color-bg);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.form-input::placeholder {
-  color: var(--color-text-faint);
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
-}
-
-.form-input--textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-}
-
-@media (max-width: 600px) {
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-.booking-form__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-top: var(--space-6);
-}
-
-.booking-form__back {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
+.book-hero p {
+  font-size: var(--text-lg);
   color: var(--color-text-muted);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  transition: color 0.15s;
-}
-
-.booking-form__back:hover {
-  color: var(--color-text);
-}
-
-.booking-form__submit {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-6);
-  font-size: var(--text-base);
-  font-weight: 600;
-  background: var(--color-primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.booking-form__submit:hover {
-  background: var(--color-primary-hover);
-}
-
-.booking-form__submit:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.booking-form__submit .spinner {
-  display: none;
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-.booking-form__submit.loading .spinner {
-  display: inline-block;
-}
-
-.booking-form__submit.loading .btn-text {
-  display: none;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ── Confirmation Panel ──────────────────────────────────────────── */
-.booking-confirmation {
-  text-align: center;
-  padding: var(--space-10) var(--space-6);
-  background: var(--color-surface);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-lg);
-}
-
-.booking-confirmation__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(34, 197, 94, 0.12);
-  color: #22C55E;
-  margin-bottom: var(--space-5);
-  animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.booking-confirmation h2 {
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-  font-weight: 600;
-  margin-bottom: var(--space-3);
-  color: var(--color-text);
-}
-
-.booking-confirmation__message {
-  font-size: var(--text-base);
-  color: var(--color-text-muted);
-  line-height: 1.7;
-  max-width: 48ch;
+  max-width: 600px;
   margin: 0 auto var(--space-6);
 }
-
-.booking-confirmation__details {
-  display: inline-flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  background: var(--color-bg);
-  padding: var(--space-5) var(--space-6);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-divider);
-  text-align: left;
-  margin-bottom: var(--space-6);
+.book-details {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
 }
-
-.booking-confirmation__detail {
+.book-detail {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   font-size: var(--text-sm);
-  color: var(--color-text);
+  color: var(--color-text-muted);
 }
-
-.booking-confirmation__detail svg {
-  color: var(--color-primary);
+.book-detail svg {
+  color: var(--brand-red);
   flex-shrink: 0;
 }
-
-.booking-confirmation__cta {
-  margin-top: var(--space-4);
+.book-embed {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--space-4) var(--space-16);
 }
-
-.booking-confirmation__cta a {
-  color: var(--color-primary);
-  text-decoration: none;
+.book-embed__frame {
+  width: 100%;
+  height: 680px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: #fff;
+}
+.book-embed__frame iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.book-embed__fallback {
+  text-align: center;
+  margin-top: var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--color-text-faint);
+}
+.book-embed__fallback a {
+  color: var(--brand-red);
   font-weight: 500;
 }
-
-.booking-confirmation__cta a:hover {
-  text-decoration: underline;
-}
-
-/* ── Loading State ───────────────────────────────────────────────── */
-.booking-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-12) var(--space-4);
-  gap: var(--space-4);
-}
-
-.booking-loading__dots {
-  display: flex;
-  gap: 6px;
-}
-
-.booking-loading__dots span {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--color-primary);
-  animation: dotPulse 1.2s infinite;
-}
-
-.booking-loading__dots span:nth-child(2) { animation-delay: 0.2s; }
-.booking-loading__dots span:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes dotPulse {
-  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
-  40% { opacity: 1; transform: scale(1); }
-}
-
-.booking-loading p {
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-}
-
-/* ── Error State ─────────────────────────────────────────────────── */
-.booking-error {
-  text-align: center;
-  padding: var(--space-8) var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-lg);
-}
-
-.booking-error svg {
-  display: inline-block;
-  color: var(--color-primary);
-  margin-bottom: var(--space-3);
-}
-
-.booking-error p {
-  color: var(--color-text-muted);
-  margin: 0 auto var(--space-4);
-  max-width: 40ch;
-}
-
-.booking-error .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-/* ── Info Cards ──────────────────────────────────────────────────── */
-.booking-details {
-  display: grid;
-  gap: var(--space-6);
-  margin-top: var(--space-10);
-  max-width: 56rem;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-@media (min-width: 768px) {
-  .booking-details {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-}
-
-.booking-detail-card {
-  padding: var(--space-5);
-  background: var(--color-surface);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-md);
-  text-align: center;
-}
-
-.booking-detail-card__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  margin-bottom: var(--space-3);
-}
-
-.booking-detail-card h4 {
-  font-family: var(--font-display);
-  font-size: var(--text-base);
-  margin-bottom: var(--space-2);
-}
-
-.booking-detail-card p {
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  line-height: 1.6;
-}
-
-/* ── Responsive ──────────────────────────────────────────────────── */
 @media (max-width: 600px) {
-  .date-strip {
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+  .book-embed__frame {
+    height: 600px;
+    border-radius: var(--radius-lg);
   }
-  .date-cell {
-    padding: var(--space-2) 2px;
-  }
-  .date-cell__day {
-    font-size: 10px;
-  }
-  .date-cell__num {
-    font-size: var(--text-sm);
-  }
-  .time-slots__grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .booking-steps span:not(.booking-step__number) {
-    display: none;
-  }
-  .booking-step {
-    gap: 0;
-  }
-}
-
-/* ── Form Error Styles ───────────────────────────────────────────── */
-.form-input.error {
-  border-color: var(--color-primary);
-}
-
-.form-error {
-  font-size: 12px;
-  color: var(--color-primary);
-  margin-top: 4px;
-}
-
-.booking-alert {
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-4);
-  display: none;
-}
-
-.booking-alert--error {
-  background: rgba(230, 57, 70, 0.1);
-  border: 1px solid rgba(230, 57, 70, 0.25);
-  color: #f87171;
 }
 </style>
-<!-- Google Ads (gtag.js) - Retargeting & Conversion Tracking -->
+
+<!-- Google Ads (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18025235354"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -768,230 +153,48 @@
     <div class="header__inner">
       <a href="./index.html" class="header__logo">
         <img src="./assets/logo-red.jpg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--dark" height="44">
-        <img src="./assets/logo-blue.svg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--light" height="44">
-      </a>
-      <nav class="header__nav">
-        <ul>
-          <li><a href="./index.html">Home</a></li>
-          <li><a href="./about.html">About</a></li>
-          <li><a href="./programs.html">Loan Programs</a></li>
-          <li><a href="./neighborhoods.html">Neighborhoods</a></li>
-          <li><a href="./blog.html">Blog</a></li>
-          <li><a href="./calculators.html">Calculators</a></li>
-          <li><a href="./status.html">Loan Status</a></li>
-          <li><a href="https://smart1003.preapprovemeapp.com?CompanyID=1997&OfficerID=93102" class="btn btn--primary btn--sm" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li>
-        </ul>
-      </nav>
+        <img src="./assets/logo-blue.svg" alt="Renegade Home Mortgage" class="header__logo-img header__logo-img--light" height="44"></a>
+      <nav class="header__nav"><ul><li><a href="./index.html">Home</a></li><li><a href="./about.html">About</a></li><li><a href="./programs.html">Loan Programs</a></li><li><a href="./neighborhoods.html">Neighborhoods</a></li><li><a href="./blog.html">Blog</a></li><li><a href="./calculators.html">Calculators</a></li><li><a href="./status.html">Loan Status</a></li><li><a href="https://smart1003.preapprovemeapp.com?CompanyID=1997&OfficerID=93102" class="btn btn--primary btn--sm" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li></ul></nav>
       <div class="header__actions">
-        <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
-        <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-        </button>
+        <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+        <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
       </div>
     </div>
   </div>
 </header>
-
-<nav class="mobile-nav">
-  <ul>
-    <li><a href="./index.html">Home</a></li>
-    <li><a href="./about.html">About</a></li>
-    <li><a href="./programs.html">Loan Programs</a></li>
-    <li><a href="./neighborhoods.html">Neighborhoods</a></li>
-    <li><a href="./blog.html">Blog</a></li>
-    <li><a href="./calculators.html">Calculators</a></li>
-    <li><a href="./status.html">Loan Status</a></li>
-    <li><a href="https://smart1003.preapprovemeapp.com?CompanyID=1997&OfficerID=93102" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li>
-  </ul>
-</nav>
+<nav class="mobile-nav"><ul><li><a href="./index.html">Home</a></li><li><a href="./about.html">About</a></li><li><a href="./programs.html">Loan Programs</a></li><li><a href="./neighborhoods.html">Neighborhoods</a></li><li><a href="./blog.html">Blog</a></li><li><a href="./calculators.html">Calculators</a></li><li><a href="./status.html">Loan Status</a></li><li><a href="https://smart1003.preapprovemeapp.com?CompanyID=1997&OfficerID=93102" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer">Get Pre-Approved</a></li></ul></nav>
 
 <main>
 
-<section class="page-hero">
+<section class="book-hero">
   <div class="container">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="./index.html">Home</a>
-      <span>/</span>
-      <span>Book a Call</span>
-    </nav>
-    <h1>Schedule Your Discovery Call</h1>
-    <p>Pick a time that works for you. In 20-30 minutes, we'll discuss your goals, explore your options, and map out a clear path forward. Free, no pressure, no obligation.</p>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="./index.html">Home</a><span>/</span><span>Schedule a Call</span></nav>
+    <h1>Schedule a Discovery Call</h1>
+    <p>Pick a time that works for you. We'll talk through your goals, explore your options, and map out a clear path forward. Free, no pressure, no obligation.</p>
+    <div class="book-details">
+      <div class="book-detail">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        20-30 minutes
+      </div>
+      <div class="book-detail">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 10l-4 4l-2-2"/><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Pick any available slot
+      </div>
+      <div class="book-detail">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Or call: <a href="tel:+15039743571" style="color: var(--brand-red); font-weight: 500;">(503) 974-3571</a>
+      </div>
+    </div>
   </div>
 </section>
 
-<section class="booking-page">
-  <div class="container">
-    <div class="booking-component" id="bookingComponent">
-
-      <!-- Steps Indicator -->
-      <div class="booking-steps" id="bookingSteps">
-        <div class="booking-step active" data-step="1">
-          <span class="booking-step__number">1</span>
-          <span>Select Date & Time</span>
-        </div>
-        <div class="booking-step__divider"></div>
-        <div class="booking-step" data-step="2">
-          <span class="booking-step__number">2</span>
-          <span>Your Details</span>
-        </div>
-        <div class="booking-step__divider"></div>
-        <div class="booking-step" data-step="3">
-          <span class="booking-step__number">3</span>
-          <span>Confirmed</span>
-        </div>
-      </div>
-
-      <!-- STEP 1: Date & Time Selection -->
-      <div id="step1" class="booking-step-panel">
-
-        <!-- Loading State -->
-        <div id="bookingLoading" class="booking-loading">
-          <div class="booking-loading__dots">
-            <span></span><span></span><span></span>
-          </div>
-          <p>Loading available times...</p>
-        </div>
-
-        <!-- Error State -->
-        <div id="bookingError" class="booking-error" style="display:none;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-          <p>We couldn't load available times right now. Please try again or give us a call.</p>
-          <button class="btn btn--primary btn--sm" onclick="loadAvailability()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-            Try Again
-          </button>
-          <p style="margin-top: var(--space-4);"><a href="tel:+15039743571" style="color: var(--color-primary);">(503) 974-3571</a></p>
-        </div>
-
-        <!-- Date Picker -->
-        <div id="datePicker" class="date-picker" style="display:none;">
-          <div class="date-picker__header">
-            <span class="date-picker__month" id="currentMonth"></span>
-            <div class="date-picker__nav">
-              <button id="prevWeek" aria-label="Previous week" disabled>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-              </button>
-              <button id="nextWeek" aria-label="Next week">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-              </button>
-            </div>
-          </div>
-          <div class="date-strip" id="dateStrip"></div>
-        </div>
-
-        <!-- Time Slots -->
-        <div id="timeSlots" class="time-slots" style="display:none;">
-          <div class="time-slots__header">
-            <span class="time-slots__title" id="timeSlotsDate">Available Times</span>
-            <span class="time-slots__tz">Pacific Time</span>
-          </div>
-          <div id="timeSlotsGrid" class="time-slots__grid"></div>
-        </div>
-
-        <!-- Continue Button -->
-        <div id="continueBtn" style="display:none; margin-top: var(--space-4); text-align: right;">
-          <button class="btn btn--primary" onclick="goToStep2()" style="padding: var(--space-3) var(--space-8); font-size: var(--text-base); font-weight: 600; background: var(--color-primary); color: #fff; border-radius: var(--radius-md); border: none; cursor: pointer;">
-            Continue
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline; margin-left: 4px;"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- STEP 2: Contact Form -->
-      <div id="step2" class="booking-step-panel" style="display:none;">
-        <div class="booking-form">
-          <div class="booking-form__header">
-            <h3 class="booking-form__title">Your Information</h3>
-            <div class="booking-form__selected" id="selectedSummary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-              <span id="selectedSlotLabel"></span>
-            </div>
-          </div>
-
-          <div id="formAlert" class="booking-alert booking-alert--error"></div>
-
-          <form id="bookingForm" onsubmit="submitBooking(event)">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="bookName">Full Name <span class="required">*</span></label>
-                <input type="text" id="bookName" class="form-input" placeholder="John Smith" required autocomplete="name">
-              </div>
-              <div class="form-group">
-                <label for="bookEmail">Email <span class="required">*</span></label>
-                <input type="email" id="bookEmail" class="form-input" placeholder="john@example.com" required autocomplete="email">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="bookPhone">Phone Number</label>
-              <input type="tel" id="bookPhone" class="form-input" placeholder="(503) 555-1234" autocomplete="tel">
-            </div>
-            <div class="form-group">
-              <label for="bookNotes">Anything you'd like us to know? <span style="color: var(--color-text-faint); font-weight: 400;">(optional)</span></label>
-              <textarea id="bookNotes" class="form-input form-input--textarea" placeholder="For example: first-time buyer, refinancing, timeline, etc."></textarea>
-            </div>
-
-            <div class="booking-form__actions">
-              <button type="button" class="booking-form__back" onclick="goToStep1()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-                Back
-              </button>
-              <button type="submit" class="booking-form__submit" id="submitBtn">
-                <span class="btn-text">Book My Discovery Call</span>
-                <span class="spinner"></span>
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- STEP 3: Confirmation -->
-      <div id="step3" class="booking-step-panel" style="display:none;">
-        <div class="booking-confirmation">
-          <div class="booking-confirmation__icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-          </div>
-          <h2>You're All Set</h2>
-          <p class="booking-confirmation__message" id="confirmMessage"></p>
-          <div class="booking-confirmation__details" id="confirmDetails"></div>
-          <div class="booking-confirmation__cta">
-            <p style="color: var(--color-text-muted); font-size: var(--text-sm);">
-              Questions before your call? Reach out at <a href="tel:+15039743571">(503) 974-3571</a> or <a href="mailto:michael@renegadehomemtg.com">michael@renegadehomemtg.com</a>
-            </p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- What to expect cards -->
-    <div class="booking-details reveal">
-      <div class="booking-detail-card">
-        <div class="booking-detail-card__icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        </div>
-        <h4>20-30 Minutes</h4>
-        <p>A focused conversation about your mortgage goals. Enough time to cover the essentials without taking up your whole day.</p>
-      </div>
-
-      <div class="booking-detail-card">
-        <div class="booking-detail-card__icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-        </div>
-        <h4>No Obligation</h4>
-        <p>This is a consultation, not a commitment. We'll give you honest answers and clear options so you can decide what's right for you.</p>
-      </div>
-
-      <div class="booking-detail-card">
-        <div class="booking-detail-card__icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 10l-4 4l6 6l4-16l-18 7l4 2l2 6l3-4"/></svg>
-        </div>
-        <h4>Video or Phone</h4>
-        <p>Meet via Google Meet video call, or we can switch to a phone call if you prefer. Whatever's most convenient.</p>
-      </div>
-    </div>
+<section class="book-embed">
+  <div class="book-embed__frame">
+    <iframe src="https://calendar.app.google/RMxs4QPxYybdn1426" title="Schedule a Mortgage Discovery Call with Michael Neef" loading="lazy"></iframe>
   </div>
+  <p class="book-embed__fallback">
+    Calendar not loading? <a href="https://calendar.app.google/RMxs4QPxYybdn1426" target="_blank" rel="noopener noreferrer">Open scheduling page directly</a>
+  </p>
 </section>
 
 </main>
@@ -999,323 +202,16 @@
 <footer class="footer">
   <div class="container">
     <div class="footer__inner">
-      <div class="footer__brand">
-        <a href="./index.html" class="header__logo">
-          <img src="./assets/logo-red.jpg" alt="Renegade Home Mortgage" class="footer__logo-img" height="36">
-        </a>
-        <p>West Linn's independent mortgage broker.</p>
-      </div>
-      <div class="footer__col">
-        <h4>Company</h4>
-        <ul>
-          <li><a href="./about.html">About Us</a></li>
-          <li><a href="./programs.html">Loan Programs</a></li>
-          <li><a href="./neighborhoods.html">Neighborhoods</a></li>
-          <li><a href="./blog.html">Blog</a></li>
-          <li><a href="./contact.html">Contact</a></li>
-          <li><a href="./referral.html">Realtor Referrals</a></li>
-          <li><a href="./status.html">Loan Status</a></li>
-        </ul>
-      </div>
-      <div class="footer__col">
-        <h4>Programs</h4>
-        <ul>
-          <li><a href="./programs.html#conventional">Conventional</a></li>
-          <li><a href="./programs.html#fha">FHA Loans</a></li>
-          <li><a href="./programs.html#va">VA Loans</a></li>
-          <li><a href="./programs.html#jumbo">Jumbo Loans</a></li>
-        </ul>
-      </div>
-      <div class="footer__col">
-        <h4>Contact</h4>
-        <ul>
-          <li><a href="tel:+15039743571">(503) 974-3571</a></li>
-          <li><a href="mailto:michael@renegadehomemtg.com">michael@renegadehomemtg.com</a></li>
-          <li>West Linn, OR 97068</li>
-        </ul>
-      </div>
+      <div class="footer__brand"><a href="./index.html" class="header__logo">
+          <img src="./assets/logo-red.jpg" alt="Renegade Home Mortgage" class="footer__logo-img" height="36"></a><p>West Linn's independent mortgage broker.</p></div>
+      <div class="footer__col"><h4>Company</h4><ul><li><a href="./about.html">About Us</a></li><li><a href="./programs.html">Loan Programs</a></li><li><a href="./neighborhoods.html">Neighborhoods</a></li><li><a href="./blog.html">Blog</a></li><li><a href="./contact.html">Contact</a></li><li><a href="./referral.html">Realtor Referrals</a></li><li><a href="./status.html">Loan Status</a></li></ul></div>
+      <div class="footer__col"><h4>Programs</h4><ul><li><a href="./programs.html#conventional">Conventional</a></li><li><a href="./programs.html#fha">FHA Loans</a></li><li><a href="./programs.html#va">VA Loans</a></li><li><a href="./programs.html#jumbo">Jumbo Loans</a></li><li><a href="./programs.html#dscr">Investor Loans</a></li><li><a href="./programs.html#aio">All-In-One (AIO)</a></li></ul></div>
+      <div class="footer__col"><h4>Contact</h4><ul><li><a href="tel:+15039743571">(503) 974-3571</a></li><li><a href="mailto:michael@renegadehomemtg.com">michael@renegadehomemtg.com</a></li><li>West Linn, OR 97068</li></ul></div>
     </div>
-    <div class="footer__legal">
-      <p>Equal Housing Opportunity Lender. All loan programs subject to credit approval. This is not a commitment to lend. Licensed in Oregon.</p>
-    </div>
-      <div class="footer__powered" style="text-align:center;padding:var(--space-3) 0;border-top:1px solid rgba(255,255,255,0.08);margin-top:var(--space-4);"><p style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin:0;">Powered by Edge Home Finance NMLS #891464</p></div>
-    </div>
+    <div class="footer__legal"><p>Renegade Home Mortgage NMLS# 1938264. Michael Neef NMLS# 227081. Powered by Edge Home Finance NMLS #891464. Equal Housing Opportunity Lender. All loan programs subject to credit approval. This is not a commitment to lend. Licensed in Oregon.</p></div>
+    <div class="footer__powered" style="text-align:center;padding:var(--space-3) 0;border-top:1px solid rgba(255,255,255,0.08);margin-top:var(--space-4);"><p style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin:0;">Powered by Edge Home Finance NMLS #891464</p></div>
+  </div>
 </footer>
-
-<!-- Floating Mobile CTA -->
-<div class="floating-cta">
-  <a href="https://smart1003.preapprovemeapp.com?CompanyID=1997&OfficerID=93102" class="btn btn--primary btn--lg" target="_blank" rel="noopener noreferrer" style="width:100%;">Get Pre-Approved Now</a>
-</div>
-
-<script>
-/* ================================================================
-   Renegade Home Mortgage - Custom Booking Component
-   ================================================================ */
-(function() {
-  'use strict';
-
-  // ── State ──────────────────────────────────────────────────────
-  let availabilityData = null;
-  let selectedDate = null;
-  let selectedSlot = null;
-  let weekOffset = 0;
-  const DAYS_PER_VIEW = 7;
-
-  // ── DOM Refs ───────────────────────────────────────────────────
-  const $loading     = document.getElementById('bookingLoading');
-  const $error       = document.getElementById('bookingError');
-  const $datePicker  = document.getElementById('datePicker');
-  const $dateStrip   = document.getElementById('dateStrip');
-  const $timeSlots   = document.getElementById('timeSlots');
-  const $timeSlotsGrid = document.getElementById('timeSlotsGrid');
-  const $currentMonth = document.getElementById('currentMonth');
-  const $prevWeek    = document.getElementById('prevWeek');
-  const $nextWeek    = document.getElementById('nextWeek');
-  const $continueBtn = document.getElementById('continueBtn');
-  const $timeSlotsDate = document.getElementById('timeSlotsDate');
-
-  // ── Initialize ─────────────────────────────────────────────────
-  window.loadAvailability = loadAvailability;
-  loadAvailability();
-
-  async function loadAvailability() {
-    $loading.style.display = 'flex';
-    $error.style.display = 'none';
-    $datePicker.style.display = 'none';
-    $timeSlots.style.display = 'none';
-    $continueBtn.style.display = 'none';
-
-    try {
-      const res = await fetch('/api/availability');
-      if (!res.ok) throw new Error('API error');
-      availabilityData = await res.json();
-      weekOffset = 0;
-      renderDateStrip();
-      $loading.style.display = 'none';
-      $datePicker.style.display = 'block';
-    } catch (err) {
-      console.error('Failed to load availability:', err);
-      $loading.style.display = 'none';
-      $error.style.display = 'block';
-    }
-  }
-
-  // ── Date Strip ─────────────────────────────────────────────────
-  function getAllDates() {
-    if (!availabilityData) return [];
-    return Object.keys(availabilityData.dates).sort();
-  }
-
-  function renderDateStrip() {
-    const allDates = getAllDates();
-    if (allDates.length === 0) {
-      $dateStrip.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--color-text-muted);padding:var(--space-6);">No available dates in the next two weeks.</p>';
-      $timeSlots.style.display = 'none';
-      return;
-    }
-
-    const startIdx = weekOffset * DAYS_PER_VIEW;
-    const visibleDates = allDates.slice(startIdx, startIdx + DAYS_PER_VIEW);
-
-    // Update month label
-    if (visibleDates.length > 0) {
-      const firstDate = new Date(visibleDates[0] + 'T12:00:00');
-      const lastDate = new Date(visibleDates[visibleDates.length - 1] + 'T12:00:00');
-      const firstMonth = firstDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      const lastMonth = lastDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      $currentMonth.textContent = firstMonth === lastMonth ? firstMonth : firstMonth + ' / ' + lastMonth;
-    }
-
-    // Nav buttons
-    $prevWeek.disabled = weekOffset === 0;
-    $nextWeek.disabled = startIdx + DAYS_PER_VIEW >= allDates.length;
-
-    // Today string
-    const today = new Date();
-    const todayStr = today.getFullYear() + '-' +
-      String(today.getMonth() + 1).padStart(2, '0') + '-' +
-      String(today.getDate()).padStart(2, '0');
-
-    // Render cells
-    $dateStrip.innerHTML = visibleDates.map(dateStr => {
-      const d = new Date(dateStr + 'T12:00:00');
-      const info = availabilityData.dates[dateStr];
-      const dayLabel = info.label;
-      const dayNum = d.getDate();
-      const isSelected = selectedDate === dateStr;
-      const isToday = dateStr === todayStr;
-      const hasSlots = info.slots && info.slots.length > 0;
-
-      let classes = 'date-cell';
-      if (isSelected) classes += ' date-cell--selected';
-      if (isToday) classes += ' date-cell--today';
-      if (!hasSlots) classes += ' date-cell--disabled';
-
-      return `<button class="${classes}" data-date="${dateStr}" ${!hasSlots ? 'disabled' : ''} aria-label="${d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})}">
-        <span class="date-cell__day">${dayLabel}</span>
-        <span class="date-cell__num">${dayNum}</span>
-      </button>`;
-    }).join('');
-
-    // Bind clicks
-    $dateStrip.querySelectorAll('.date-cell:not(.date-cell--disabled)').forEach(cell => {
-      cell.addEventListener('click', () => {
-        selectedDate = cell.dataset.date;
-        selectedSlot = null;
-        $continueBtn.style.display = 'none';
-        renderDateStrip();
-        renderTimeSlots();
-      });
-    });
-
-    // If a date is already selected, show its time slots
-    if (selectedDate && visibleDates.includes(selectedDate)) {
-      renderTimeSlots();
-    }
-  }
-
-  $prevWeek.addEventListener('click', () => { weekOffset--; renderDateStrip(); });
-  $nextWeek.addEventListener('click', () => { weekOffset++; renderDateStrip(); });
-
-  // ── Time Slots ─────────────────────────────────────────────────
-  function renderTimeSlots() {
-    if (!selectedDate || !availabilityData.dates[selectedDate]) {
-      $timeSlots.style.display = 'none';
-      return;
-    }
-
-    const info = availabilityData.dates[selectedDate];
-    const slots = info.slots || [];
-    const d = new Date(selectedDate + 'T12:00:00');
-    $timeSlotsDate.textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-
-    if (slots.length === 0) {
-      $timeSlotsGrid.innerHTML = `<div class="time-slots__empty" style="grid-column:1/-1;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-        <p>No available slots on this day. Try another date.</p>
-      </div>`;
-    } else {
-      $timeSlotsGrid.innerHTML = slots.map(slot => {
-        const isSelected = selectedSlot && selectedSlot.iso === slot.iso;
-        return `<button class="time-slot${isSelected ? ' time-slot--selected' : ''}" data-iso="${slot.iso}" data-time="${slot.time}">
-          ${slot.time}
-        </button>`;
-      }).join('');
-
-      $timeSlotsGrid.querySelectorAll('.time-slot').forEach(btn => {
-        btn.addEventListener('click', () => {
-          selectedSlot = { iso: btn.dataset.iso, time: btn.dataset.time };
-          renderTimeSlots();
-          $continueBtn.style.display = 'block';
-        });
-      });
-    }
-
-    $timeSlots.style.display = 'block';
-  }
-
-  // ── Step Navigation ────────────────────────────────────────────
-  function updateSteps(current) {
-    document.querySelectorAll('.booking-step').forEach(el => {
-      const step = parseInt(el.dataset.step);
-      el.classList.remove('active', 'completed');
-      if (step === current) el.classList.add('active');
-      else if (step < current) el.classList.add('completed');
-    });
-    document.querySelectorAll('.booking-step__divider').forEach((el, i) => {
-      el.classList.toggle('completed', i < current - 1);
-    });
-  }
-
-  window.goToStep2 = function() {
-    if (!selectedSlot) return;
-    document.getElementById('step1').style.display = 'none';
-    document.getElementById('step2').style.display = 'block';
-    updateSteps(2);
-
-    const d = new Date(selectedDate + 'T12:00:00');
-    const dateLabel = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    document.getElementById('selectedSlotLabel').textContent = dateLabel + ' at ' + selectedSlot.time + ' PT';
-    document.getElementById('bookName').focus();
-  };
-
-  window.goToStep1 = function() {
-    document.getElementById('step2').style.display = 'none';
-    document.getElementById('step1').style.display = 'block';
-    updateSteps(1);
-  };
-
-  // ── Form Submission ────────────────────────────────────────────
-  window.submitBooking = async function(e) {
-    e.preventDefault();
-    const $btn = document.getElementById('submitBtn');
-    const $alert = document.getElementById('formAlert');
-    $alert.style.display = 'none';
-
-    const name = document.getElementById('bookName').value.trim();
-    const email = document.getElementById('bookEmail').value.trim();
-    const phone = document.getElementById('bookPhone').value.trim();
-    const notes = document.getElementById('bookNotes').value.trim();
-
-    if (!name || !email) {
-      $alert.textContent = 'Please fill in your name and email.';
-      $alert.style.display = 'block';
-      return;
-    }
-
-    $btn.classList.add('loading');
-    $btn.disabled = true;
-
-    try {
-      const res = await fetch('/api/book', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          phone,
-          notes,
-          slot_iso: selectedSlot.iso,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Booking failed. Please try again.');
-      }
-
-      // Success - show confirmation
-      document.getElementById('step2').style.display = 'none';
-      document.getElementById('step3').style.display = 'block';
-      updateSteps(3);
-
-      document.getElementById('confirmMessage').textContent = data.message;
-      document.getElementById('confirmDetails').innerHTML = `
-        <div class="booking-confirmation__detail">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-          <span>${data.booking.date}</span>
-        </div>
-        <div class="booking-confirmation__detail">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          <span>${data.booking.time} ${data.booking.timezone}</span>
-        </div>
-        <div class="booking-confirmation__detail">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          <span>Confirmation will be sent to ${data.booking.email}</span>
-        </div>
-      `;
-
-    } catch (err) {
-      $alert.textContent = err.message;
-      $alert.style.display = 'block';
-      $btn.classList.remove('loading');
-      $btn.disabled = false;
-    }
-  };
-
-})();
-</script>
 
 <script src="./app.js" defer></script>
 <script src="./chatbot.js" defer></script>
