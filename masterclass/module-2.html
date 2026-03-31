@@ -62,6 +62,36 @@
       color: var(--color-text-muted);
       margin-bottom: var(--space-6);
     }
+    /* Force single row for sweep flow */
+    #sweep-flow.sweep-flow {
+      flex-wrap: nowrap;
+      justify-content: center;
+    }
+    #sweep-flow .sweep-node {
+      min-width: 0;
+      flex: 0 1 auto;
+      padding: var(--space-3) var(--space-4);
+    }
+    #sweep-flow .sweep-node__value {
+      font-size: var(--text-base);
+    }
+    /* Surplus node hidden until animation reveals it */
+    #sn-surplus,
+    #sweep-arrow-surplus {
+      opacity: 0;
+      transform: scale(0.85);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    #sn-surplus.sweep-node--revealed,
+    #sweep-arrow-surplus.sweep-arrow--revealed {
+      opacity: 1;
+      transform: scale(1);
+    }
+    @media (max-width: 700px) {
+      #sweep-flow.sweep-flow {
+        flex-wrap: wrap;
+      }
+    }
     .sweep-legend {
       display: flex;
       gap: var(--space-6);
@@ -266,9 +296,9 @@
                 <div class="sweep-node__sub">Bills &amp; spending</div>
               </div>
 
-              <div class="sweep-arrow" aria-hidden="true">&#8594;</div>
+              <div class="sweep-arrow" id="sweep-arrow-surplus" aria-hidden="true">&#8594;</div>
 
-              <!-- Node 4: Surplus -->
+              <!-- Node 4: Surplus (hidden until expenses step completes) -->
               <div class="sweep-node" id="sn-surplus" aria-label="Surplus: $3,000 stays attacking principal">
                 <div class="sweep-node__label">Surplus Stays</div>
                 <div class="sweep-node__value">$3,000</div>
@@ -586,8 +616,11 @@
 
       // Step sequence for the animation
       // Each step: [nodeIndex, addActive, addGreen, aioText, aioSub]
+      var surplusNode = document.getElementById('sn-surplus');
+      var surplusArrow = document.getElementById('sweep-arrow-surplus');
+
       var steps = [
-        // Step 0: Reset all
+        // Step 0: Reset all (hide surplus)
         { reset: true },
         // Step 1: Paycheck lights up red (money in motion)
         { node: 0, active: true, green: false, aioText: '$500,000', aioSub: 'Principal balance' },
@@ -597,8 +630,8 @@
         { node: 1, active: false, green: true, aioText: '$492,000', aioSub: 'Attacking principal' },
         // Step 4: Bills node lights up red (money out)
         { node: 2, active: true, green: false, aioText: '$492,000', aioSub: 'Expenses flow out' },
-        // Step 5: Surplus node turns green (surplus stays working)
-        { node: 3, active: false, green: true, aioText: '$492,000', aioSub: 'Surplus working 24/7' },
+        // Step 5: Reveal surplus node + arrow, then turn green
+        { reveal: true, node: 3, active: false, green: true, aioText: '$492,000', aioSub: 'Surplus working 24/7' },
         // Pause before reset
         { pause: true }
       ];
@@ -611,6 +644,9 @@
         nodes.forEach(function(n) {
           n.classList.remove('sweep-node--active', 'sweep-node--green');
         });
+        // Hide surplus node and arrow on reset
+        if (surplusNode) surplusNode.classList.remove('sweep-node--revealed');
+        if (surplusArrow) surplusArrow.classList.remove('sweep-arrow--revealed');
         if (aioVal) aioVal.textContent = '$500,000';
         if (aioSub) aioSub.textContent = 'Principal balance';
       }
@@ -629,6 +665,11 @@
           return;
         } else {
           var n = nodes[step.node];
+          // Reveal surplus node if this step triggers it
+          if (step.reveal) {
+            if (surplusArrow) surplusArrow.classList.add('sweep-arrow--revealed');
+            if (surplusNode) surplusNode.classList.add('sweep-node--revealed');
+          }
           if (step.active) {
             n.classList.add('sweep-node--active');
             n.classList.remove('sweep-node--green');
