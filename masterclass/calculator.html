@@ -502,14 +502,14 @@
         <div class="calc-input">
           <label for="calc-fixed-rate">Traditional Fixed Rate (illustration)</label>
           <div class="calc-input__wrap">
-            <input type="text" id="calc-fixed-rate" value="6.45" inputmode="decimal" style="padding-left: var(--space-4);">
+            <input type="text" id="calc-fixed-rate" value="7.20" inputmode="decimal" style="padding-left: var(--space-4);">
             <span class="calc-input__suffix">%</span>
           </div>
         </div>
         <div class="calc-input">
           <label for="calc-aio-rate">AIO Variable Rate (illustration)</label>
           <div class="calc-input__wrap">
-            <input type="text" id="calc-aio-rate" value="5.50" inputmode="decimal" style="padding-left: var(--space-4);">
+            <input type="text" id="calc-aio-rate" value="7.20" inputmode="decimal" style="padding-left: var(--space-4);">
             <span class="calc-input__suffix">%</span>
           </div>
         </div>
@@ -709,16 +709,21 @@
         break;
       }
 
-      // 30 days: daily expense withdrawals + daily interest
+      // 30 days: daily spending + daily interest ACCRUAL (capitalized at month end)
       var prevBal = bal;
+      var monthInt = 0;
       for (var d = 0; d < 30; d++) {
         bal += dailyExpense;
-        var dayInt = bal * dailyRate;
-        totalInterest += dayInt;
-        bal += dayInt;
+        if (bal > 0) {
+          monthInt += bal * dailyRate;
+        }
       }
 
-      // If balance is growing (surplus cannot cover interest), AIO not viable
+      // End of month: capitalize interest
+      bal += monthInt;
+      totalInterest += monthInt;
+
+      // If balance is growing, surplus cannot cover interest
       if (totalMonths > 3 && bal >= prevBal) {
         totalMonths = maxMonths;
         history.push(bal);

@@ -330,18 +330,18 @@
         <div class="formula-block">
           <span class="formula-line">Daily Interest = (Current Principal &times; Annual Rate) &divide; 365</span>
           &nbsp;
-          <span class="formula-line">Traditional Loan (for illustration, balance constant at $500,000 at 6.45% rate):</span>
-          <span class="formula-highlight--red">Daily Interest = ($500,000 &times; 0.0645) &divide; 365 = $88.36 per day</span>
+          <span class="formula-line">Traditional Loan (for illustration, balance constant at $500,000 at 7.2%):</span>
+          <span class="formula-highlight--red">Daily Interest = ($500,000 &times; 0.072) &divide; 365 = $98.63 per day</span>
           &nbsp;
-          <span class="formula-line">AIO Loan (for illustration, balance at $492,000 after deposit, at 5.50% effective rate):</span>
-          <span class="formula-highlight">Daily Interest = ($492,000 &times; 0.055) &divide; 365 = $74.14 per day</span>
+          <span class="formula-line">AIO Loan (for illustration, same 7.2% rate, but balance at $490,000 after $10K deposit):</span>
+          <span class="formula-highlight">Daily Interest = ($490,000 &times; 0.072) &divide; 365 = $96.66 per day</span>
           &nbsp;
-          <span class="formula-line">The AIO's nominal rate may be higher, but the effective rate you experience is lower because your surplus constantly reduces the balance interest is charged on.</span>
+          <span class="formula-line">Same rate. But the AIO balance is always lower because your income sits in the account. Interest is calculated daily on that lower balance and only capitalized at month end.</span>
         </div>
 
-        <p>The effective rate you experience with an AIO is typically 2 to 3 percentage points lower than the nominal rate printed on your note. The nominal HELOC rate may be slightly higher than a 30-year fixed, but because your surplus constantly reduces the balance that interest is charged on, the actual interest cost per month drops rapidly. The illustration above uses a 5.50% effective rate to reflect this velocity-of-money benefit.</p>
+        <p>Notice: in this illustration, both loans use the same 7.2% rate. The AIO does not need a lower rate to win. It wins because the structure is different. In a traditional mortgage, you pay interest on the full balance all month, then your payment chips away a tiny bit of principal. In the AIO, your income immediately drops the balance, interest accrues on that lower amount all month, and only the net interest is capitalized at month end. The surplus that would have sat idle in a checking account is now embedded in the loan, working against the principal every single day.</p>
 
-        <p>Think of it this way. A traditional borrower pays their rate on the full $500,000 for years. An AIO borrower's effective balance falls fast because the surplus never leaves the account. After just a few months, the AIO daily interest charge is already lower than the traditional, and the gap widens every month.</p>
+        <p>The larger your surplus relative to your balance, the more dramatic the effect. A family depositing $10,000/month with $5,000 in living expenses has $5,000 of surplus attacking $500,000 in principal. That balance drops fast, and as it drops, the monthly interest drops too, which means even more of next month's surplus goes to principal. It accelerates.</p>
 
         <div class="mod-stats">
           <div class="mod-stat">
@@ -460,11 +460,11 @@
               <span class="mod-calc__result-value mod-calc__result-value--green" id="res-surplus">$3,000</span>
             </div>
             <div class="mod-calc__result-row">
-              <span class="mod-calc__result-label">Traditional Payoff (30yr fixed at 6.45% - illustrative, no extra payments)</span>
+              <span class="mod-calc__result-label">Traditional Payoff (30yr fixed at 7.2% - illustrative, no extra payments)</span>
               <span class="mod-calc__result-value mod-calc__result-value--red" id="res-trad-payoff">30.0 years</span>
             </div>
             <div class="mod-calc__result-row">
-              <span class="mod-calc__result-label">AIO Payoff (daily accrual at 5.50% effective - illustrative)</span>
+              <span class="mod-calc__result-label">AIO Payoff (daily accrual at 7.2% - illustrative)</span>
               <span class="mod-calc__result-value mod-calc__result-value--green" id="res-aio-payoff">--</span>
             </div>
             <div class="mod-calc__result-row">
@@ -599,8 +599,8 @@
 
 // --- Velocity of Money Calculator ---
 (function() {
-  var TRAD_RATE = 0.0645;   // 6.45% - illustrative
-  var AIO_RATE  = 0.055;    // 5.50% - illustrative (reflects effective rate after velocity of money benefit)
+  var TRAD_RATE = 0.072;    // 7.2% - illustrative (same rate used for both to isolate the AIO structure benefit)
+  var AIO_RATE  = 0.072;    // 7.2% - illustrative
 
   function fmt$(n) {
     if (n >= 1000000) return '$' + (n / 1000000).toFixed(2) + 'M';
@@ -659,28 +659,32 @@
     var totalInterest = 0;
     var months = 0;
     var maxMonths = 600;
-    var dailyExpense = monthlyExpenses / 30;
+    var dailySpending = monthlyExpenses / 30;
 
     var prevBal = balance;
     for (var m = 0; m < maxMonths; m++) {
-      // Day 1: deposit full paycheck
-      bal -= monthlyIncome;
-      if (bal <= 0) {
-        months++;
-        break; // Loan paid off
-      }
+      var monthInt = 0;
 
-      // 30 days: daily interest + daily expense withdrawals
       for (var d = 0; d < 30; d++) {
-        bal += dailyExpense;
-        var dayInt = bal * annualRate / 365;
-        totalInterest += dayInt;
-        bal += dayInt;
+        // Day 1: deposit income
+        if (d === 0) {
+          bal -= monthlyIncome;
+          if (bal <= 0) { months++; return { years: months / 12, totalInterest: totalInterest }; }
+        }
+        // Daily spending
+        bal += dailySpending;
+        // Daily interest accrual (NOT added to balance yet)
+        if (bal > 0) {
+          monthInt += bal * annualRate / 365;
+        }
       }
 
+      // End of month: capitalize interest
+      bal += monthInt;
+      totalInterest += monthInt;
       months++;
 
-      // If balance is growing instead of shrinking, the surplus cannot cover interest
+      // If balance is growing, surplus cannot cover interest
       if (months > 3 && bal >= prevBal) {
         return { years: Infinity, totalInterest: Infinity };
       }
