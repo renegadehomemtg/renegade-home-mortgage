@@ -509,7 +509,7 @@
         <div class="calc-input">
           <label for="calc-aio-rate">AIO Variable Rate (illustration)</label>
           <div class="calc-input__wrap">
-            <input type="text" id="calc-aio-rate" value="7.15" inputmode="decimal" style="padding-left: var(--space-4);">
+            <input type="text" id="calc-aio-rate" value="5.50" inputmode="decimal" style="padding-left: var(--space-4);">
             <span class="calc-input__suffix">%</span>
           </div>
         </div>
@@ -709,17 +709,17 @@
         break;
       }
 
-      // 30 days: daily interest + daily expense withdrawals
+      // 30 days: daily expense withdrawals + daily interest
+      var prevBal = bal;
       for (var d = 0; d < 30; d++) {
+        bal += dailyExpense;
         var dayInt = bal * dailyRate;
         totalInterest += dayInt;
         bal += dayInt;
-        bal += dailyExpense;
       }
 
-      // Check if loan will never pay off (interest > surplus)
-      if (m > 12 && bal >= balance * 0.995) {
-        // Principal not meaningfully decreasing, AIO not viable at this rate/surplus
+      // If balance is growing (surplus cannot cover interest), AIO not viable
+      if (totalMonths > 3 && bal >= prevBal) {
         totalMonths = maxMonths;
         history.push(bal);
         break;
