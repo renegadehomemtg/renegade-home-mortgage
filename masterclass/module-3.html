@@ -310,9 +310,9 @@
             </div>
           </div>
           <div class="savings-meter">
-            <div class="savings-meter__label">Illustrative Daily Interest Saved (Year 1 Avg)</div>
-            <div class="savings-meter__value" id="dailySavingsDisplay">$1.57</div>
-            <div class="savings-meter__sub">Every single day. For the life of the loan.</div>
+            <div class="savings-meter__label" id="dailySavingsLabel">Daily Interest Difference (Day 1)</div>
+            <div class="savings-meter__value" id="dailySavingsDisplay">$0.00</div>
+            <div class="savings-meter__sub" id="dailySavingsSub">Comparing traditional vs. AIO daily interest charge</div>
           </div>
         </div>
 
@@ -346,16 +346,16 @@
 
         <div class="mod-stats">
           <div class="mod-stat">
-            <div class="mod-stat__value mod-stat__value--green">$1.57</div>
-            <div class="mod-stat__label">Daily savings in Year 1 (illustrative)</div>
+            <div class="mod-stat__value" id="stat-trad-daily" style="color:var(--brand-red);">$88.36</div>
+            <div class="mod-stat__label">Traditional daily interest (on full balance)</div>
           </div>
           <div class="mod-stat">
-            <div class="mod-stat__value mod-stat__value--green">$573</div>
-            <div class="mod-stat__label">Year 1 interest saved</div>
+            <div class="mod-stat__value" id="stat-aio-daily" style="color:#34D399;">$96.38</div>
+            <div class="mod-stat__label">AIO daily interest (after deposit, Day 1)</div>
           </div>
           <div class="mod-stat">
-            <div class="mod-stat__value mod-stat__value--green">Compounds</div>
-            <div class="mod-stat__label">Grows each year as balance shrinks faster</div>
+            <div class="mod-stat__value mod-stat__value--green">Flips</div>
+            <div class="mod-stat__label">AIO daily charge drops below traditional as principal shrinks</div>
           </div>
         </div>
 
@@ -731,20 +731,34 @@
         interestSaved !== null && interestSaved > 0 ? fmt$(interestSaved) : 'See a loan officer for details';
     }
 
-    // Update the daily savings display in the balance visual
-    // Year 1: AIO avg daily interest vs traditional daily interest on full balance
-    var tradDailyYr1 = balance * TRAD_RATE / 365;
-    var aioDailyYr1  = (balance - surplus) * AIO_RATE / 365;
-    var dailySavings = tradDailyYr1 - aioDailyYr1;
+    // Update the daily interest comparison display
+    var tradDaily = balance * TRAD_RATE / 365;
+    var aioDaily  = (balance - surplus) * AIO_RATE / 365;
+    var diff = tradDaily - aioDaily;
+
     var display = document.getElementById('dailySavingsDisplay');
+    var label = document.getElementById('dailySavingsLabel');
+    var sub = document.getElementById('dailySavingsSub');
+    var statTrad = document.getElementById('stat-trad-daily');
+    var statAio = document.getElementById('stat-aio-daily');
+
+    if (statTrad) statTrad.textContent = '$' + tradDaily.toFixed(2);
+    if (statAio) statAio.textContent = '$' + aioDaily.toFixed(2);
+
     if (display) {
-      if (dailySavings > 0) {
-        display.textContent = '$' + dailySavings.toFixed(2);
+      if (diff > 0) {
+        // AIO is cheaper on Day 1 (rare with higher rate, but possible with large surplus)
+        display.textContent = '$' + diff.toFixed(2) + '/day saved';
         display.style.color = '#34D399';
+        if (label) label.textContent = 'AIO Saves You on Day 1';
+        if (sub) sub.textContent = 'Your surplus is large enough to offset the higher rate immediately.';
       } else {
-        var absSav = Math.abs(dailySavings);
-        display.textContent = '-$' + absSav.toFixed(2);
+        // AIO is more expensive on Day 1 (typical) - but principal shrinks faster
+        var absDiff = Math.abs(diff);
+        display.textContent = '$' + absDiff.toFixed(2) + '/day more on Day 1';
         display.style.color = 'var(--brand-red)';
+        if (label) label.textContent = 'AIO Costs More on Day 1 - But Here Is the Catch';
+        if (sub) sub.textContent = 'The higher rate costs more initially, but the AIO principal shrinks so fast that total interest paid is dramatically less over time. Increase your surplus above to see the crossover.';
       }
     }
   }
