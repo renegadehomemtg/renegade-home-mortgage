@@ -658,34 +658,35 @@
     if (balance <= 0) return { years: 0, totalInterest: 0 };
     var bal = balance;
     var totalInterest = 0;
-    var days = 0;
-    var maxDays = 365 * 60; // 60-year safety cap
+    var months = 0;
+    var maxMonths = 600;
+    var dailyExpense = monthlyExpenses / 30;
 
-    while (bal > 0.01 && days < maxDays) {
-      var dayOfMonth = days % 30;
-
-      // Day 1 of each month: deposit income
-      if (dayOfMonth === 0) {
-        bal -= monthlyIncome;
-        if (bal < 0) bal = 0; // loan paid off
+    for (var m = 0; m < maxMonths; m++) {
+      // Day 1: deposit full paycheck
+      bal -= monthlyIncome;
+      if (bal <= 0) {
+        months++;
+        break; // Loan paid off
       }
 
-      // Each day: withdraw daily share of expenses
-      var dailyExpense = monthlyExpenses / 30;
-      bal += dailyExpense;
-
-      // Daily interest accrues on current balance
-      if (bal > 0) {
-        var dailyInterest = bal * annualRate / 365;
-        totalInterest += dailyInterest;
-        bal += dailyInterest;
+      // 30 days: daily interest + daily expense withdrawals
+      for (var d = 0; d < 30; d++) {
+        var dayInt = bal * annualRate / 365;
+        totalInterest += dayInt;
+        bal += dayInt;
+        bal += dailyExpense;
       }
 
-      days++;
-      if (bal < 0) bal = 0;
+      // Check if principal is not meaningfully decreasing (AIO not viable)
+      if (m > 12 && bal >= balance * 0.995) {
+        return { years: Infinity, totalInterest: Infinity };
+      }
+
+      months++;
     }
 
-    return { years: days / 365, totalInterest: totalInterest };
+    return { years: months / 12, totalInterest: totalInterest };
   }
 
   function runCalc() {
@@ -695,8 +696,9 @@
 
     var surplus = income - expenses;
 
-    // Traditional: standard amortization, surplus as extra monthly principal payment
-    var tradResult = tradPayoff(balance, TRAD_RATE, Math.max(0, surplus));
+    // Traditional: standard 30-year amortization, NO extra payments
+    // The whole point: in a traditional setup, surplus sits in savings doing nothing
+    var tradResult = tradPayoff(balance, TRAD_RATE, 0);
 
     // AIO: daily simulation
     var aioResult = { years: Infinity, totalInterest: Infinity };
@@ -716,9 +718,13 @@
 
     // AIO payoff
     if (!isFinite(aioResult.years) || surplus <= 0) {
-      document.getElementById('res-aio-payoff').textContent = 'Requires positive surplus';
-      document.getElementById('res-years-saved').textContent = 'N/A';
-      document.getElementById('res-interest-saved').textContent = 'N/A';
+      if (surplus <= 0) {
+        document.getElementById('res-aio-payoff').textContent = 'Requires positive surplus';
+      } else {
+        document.getElementById('res-aio-payoff').textContent = 'Surplus too low at this rate';
+      }
+      document.getElementById('res-years-saved').textContent = 'Increase surplus';
+      document.getElementById('res-interest-saved').textContent = 'Try higher income or lower expenses';
     } else {
       document.getElementById('res-aio-payoff').textContent = fmtYears(aioResult.years);
 
