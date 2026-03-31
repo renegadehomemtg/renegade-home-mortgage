@@ -897,45 +897,116 @@
     };
   }
 
-  // --- AI Question Handler (calls backend LLM) ---
-  async function handleAIQuestion(question, responseDiv, askBtn) {
+  // --- AIO Scenario Calculator (used by AI handler) ---
+  function runAIOScenario(balance, rate, surplus) {
+    if (surplus <= 0) return { months: 9999, totalInterest: 0 };
+    var bal = balance, ti = 0, mo = 0;
+    for (var m = 0; m < 600; m++) {
+      var mi = bal * rate / 12; ti += mi;
+      bal = bal - surplus + mi; mo++;
+      if (bal <= 0) break;
+      if (mo > 3 && bal >= balance) return { months: 9999, totalInterest: ti };
+    }
+    return { months: mo, totalInterest: ti };
+  }
+
+  // --- AI Question Handler (smart client-side with live calculations) ---
+  function handleAIQuestion(question, responseDiv, askBtn) {
     var s = window._calcState;
-    
-    // Show loading state
+    if (!s) { responseDiv.style.display = 'block'; responseDiv.textContent = 'Enter your numbers above first, then ask a question.'; return; }
+
     responseDiv.style.display = 'block';
-    responseDiv.innerHTML = '<span style="color:var(--color-text-faint);">Thinking...</span>';
     askBtn.disabled = true;
     askBtn.textContent = '...';
 
-    // Build calc state to send
-    var calcPayload = {};
-    if (s) {
-      calcPayload = {
-        income: s.income,
-        expenses: s.expenses,
-        balance: s.balance,
-        surplus: s.surplus,
-        fixedRate: s.fixedRate,
-        aioRate: s.aioRate,
-        trad: { months: s.trad.months, totalInterest: s.trad.totalInterest },
-        aio: { months: s.aio.months, totalInterest: s.aio.totalInterest },
-        yearsSaved: s.yearsSaved,
-        intSaved: s.intSaved
-      };
+    var q = question.toLowerCase();
+    var response = '';
+
+    // Extract dollar amounts from question
+    var dollarMatch = q.match(/\$?([\d,]+)/g);
+    var extractedAmount = dollarMatch ? parseNum(dollarMatch[0]) : 0;
+
+    if (q.match(/bonus|lump|extra.*deposit|one.?time|windfall|tax.*refund/)) {
+      var amt = extractedAmount || 5000;
+      var newBal = s.balance - amt;
+      var scenario = runAIOScenario(newBal, s.aioRate, s.surplus);
+      var monthsDiff = s.aio.months - scenario.months;
+      var intDiff = s.aio.totalInterest - scenario.totalInterest;
+      response = 'A ' + fmt(amt) + ' lump sum deposited into your AIO immediately reduces your principal to ' + fmt(newBal) + '. ';
+      if (monthsDiff > 0) {
+        response += 'This would shave about ' + (monthsDiff/12).toFixed(1) + ' years off your payoff and save roughly ' + fmt(intDiff) + ' in interest. ';
+      }
+      response += 'Every extra dollar deposited stops interest from accruing on that amount immediately.';
+
+    } else if (q.match(/expense|spend|cost.*go.*up|lifestyle|increase.*expense/)) {
+      var amt = extractedAmount || 500;
+      var newSurplus = s.surplus - amt;
+      if (newSurplus <= 0) {
+        response = 'If your expenses increase by ' + fmt(amt) + '/month, your surplus drops to ' + fmt(newSurplus) + ' which would not be enough to make progress on the loan. The AIO requires a positive surplus after living expenses to reduce principal.';
+      } else {
+        var scenario = runAIOScenario(s.balance, s.aioRate, newSurplus);
+        var monthsDiff = scenario.months - s.aio.months;
+        response = 'If your living expenses increase by ' + fmt(amt) + '/month, your surplus drops from ' + fmt(s.surplus) + ' to ' + fmt(newSurplus) + '. ';
+        response += 'This would extend your payoff by about ' + (monthsDiff/12).toFixed(1) + ' years. ';
+        response += 'The AIO is sensitive to cash flow. Keeping expenses in check is one of the most powerful levers you have.';
+      }
+
+    } else if (q.match(/rental|side.*income|extra.*income|raise|new.*job|add.*income/)) {
+      var amt = extractedAmount || 2000;
+      var newSurplus = s.surplus + amt;
+      var scenario = runAIOScenario(s.balance, s.aioRate, newSurplus);
+      var monthsDiff = s.aio.months - scenario.months;
+      var intDiff = s.aio.totalInterest - scenario.totalInterest;
+      response = 'Adding ' + fmt(amt) + '/month in income boosts your surplus from ' + fmt(s.surplus) + ' to ' + fmt(newSurplus) + '. ';
+      if (scenario.months < 600) {
+        response += 'Your AIO would pay off in about ' + (scenario.months/12).toFixed(1) + ' years instead of ' + (s.aio.months/12).toFixed(1) + ' years, saving ' + fmt(intDiff) + ' in interest. ';
+      }
+      response += 'Every dollar of additional income deposited into the AIO attacks the principal daily.';
+
+    } else if (q.match(/rate.*drop|rate.*decrease|lower.*rate|rate.*go.*down|rate.*fall/)) {
+      var newRate = s.aioRate - 0.01;
+      var scenario = runAIOScenario(s.balance, newRate, s.surplus);
+      var monthsDiff = s.aio.months - scenario.months;
+      var intDiff = s.aio.totalInterest - scenario.totalInterest;
+      response = 'If the AIO rate drops by 1% (from ' + (s.aioRate*100).toFixed(1) + '% to ' + (newRate*100).toFixed(1) + '%), your monthly interest charge decreases and more of your surplus goes to principal. ';
+      if (scenario.months < 600) {
+        response += 'Payoff drops to about ' + (scenario.months/12).toFixed(1) + ' years, saving ' + fmt(intDiff) + ' in interest. ';
+      }
+      response += 'Since the AIO has a variable rate, rate decreases benefit you immediately.';
+
+    } else if (q.match(/rate.*increase|rate.*go.*up|rate.*rise|higher.*rate/)) {
+      var newRate = s.aioRate + 0.01;
+      var scenario = runAIOScenario(s.balance, newRate, s.surplus);
+      var monthsDiff = scenario.months - s.aio.months;
+      response = 'If the rate increases by 1% (to ' + (newRate*100).toFixed(1) + '%), more of your surplus goes to interest each month. ';
+      if (scenario.months < 600) {
+        response += 'Payoff extends to about ' + (scenario.months/12).toFixed(1) + ' years, about ' + (monthsDiff/12).toFixed(1) + ' years longer. ';
+      } else {
+        response += 'At that rate, your surplus may not be enough to make progress. You would need to increase income or reduce expenses. ';
+      }
+      response += 'This is the tradeoff with a variable rate product. Higher cash flow provides a buffer against rate increases.';
+
+    } else if (q.match(/how.*work|what.*aio|explain|what.*all.in.one/)) {
+      response = 'The AIO is a first-lien HELOC with an integrated checking account. Your income deposits directly into the loan, reducing the principal. Interest accrues daily on the lower balance. Living expenses are paid from the same account. The difference between your income and expenses (your surplus of ' + fmt(s.surplus) + '/month) reduces the principal each month, minus interest. As the balance drops, interest drops, and more of your surplus goes to principal. It accelerates over time.';
+
+    } else if (q.match(/qualif|eligible|credit|score|require|who.*can/)) {
+      response = 'The AIO typically requires a 700+ credit score, positive monthly cash flow (you must earn more than you spend), and financial discipline. It works best for borrowers with a consistent surplus. Based on your numbers, your surplus is ' + fmt(s.surplus) + '/month, which ' + (s.surplus > s.balance * s.aioRate / 12 ? 'is strong enough to make significant progress.' : 'is on the lower end. A larger surplus would accelerate your payoff.') + ' Schedule a consultation to discuss your specific situation.';
+
+    } else {
+      // Default: summarize their current results
+      if (s.aio.months < 600) {
+        response = 'Based on your numbers: ' + fmt(s.surplus) + '/month surplus on a ' + fmt(s.balance) + ' balance at ' + (s.aioRate*100).toFixed(1) + '%. ';
+        response += 'The AIO pays off in ' + (s.aio.months/12).toFixed(1) + ' years versus ' + (s.trad.months/12).toFixed(0) + ' years for a traditional 30-year fixed. ';
+        response += 'That saves you ' + fmt(s.intSaved) + ' in interest and ' + s.yearsSaved.toFixed(1) + ' years. ';
+        response += 'Try asking about bonuses, expense changes, rental income, or rate movements to explore scenarios.';
+      } else {
+        response = 'With your current surplus of ' + fmt(s.surplus) + '/month on a ' + fmt(s.balance) + ' balance at ' + (s.aioRate*100).toFixed(1) + '%, the interest charge is consuming most of the surplus. ';
+        response += 'To make the AIO work effectively, try increasing your income or reducing expenses. Even an extra $500/month in surplus can make a significant difference. ';
+        response += 'Want to talk through your options? Call us at (503) 974-3571.';
+      }
     }
 
-    try {
-      var res = await fetch('/api/masterclass-ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: question, calc_state: calcPayload })
-      });
-      var data = await res.json();
-      responseDiv.textContent = data.answer || 'No response received. Please try again.';
-    } catch (err) {
-      responseDiv.textContent = 'Could not reach the AI right now. Please try again or call us at (503) 974-3571.';
-    }
-
+    responseDiv.textContent = response;
     askBtn.disabled = false;
     askBtn.textContent = 'Ask';
   }
