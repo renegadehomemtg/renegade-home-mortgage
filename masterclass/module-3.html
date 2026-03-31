@@ -442,7 +442,7 @@
           <div class="mod-calc__inputs">
             <div class="mod-calc__field">
               <label for="calc-income">Monthly Income</label>
-              <input type="number" id="calc-income" value="8000" min="1000" max="100000" step="500" aria-label="Monthly income in dollars">
+              <input type="number" id="calc-income" value="10000" min="1000" max="100000" step="500" aria-label="Monthly income in dollars">
             </div>
             <div class="mod-calc__field">
               <label for="calc-expenses">Monthly Expenses</label>
@@ -691,7 +691,7 @@
   }
 
   function runCalc() {
-    var income   = parseFloat(document.getElementById('calc-income').value)   || 8000;
+    var income   = parseFloat(document.getElementById('calc-income').value)   || 10000;
     var expenses = parseFloat(document.getElementById('calc-expenses').value) || 5000;
     var balance  = parseFloat(document.getElementById('calc-balance').value)  || 500000;
 
